@@ -1,0 +1,12 @@
+Array
+(
+    [dirs] => Array
+        (
+            [0] => .svn
+        )
+
+    [files] => Array
+        (
+        )
+
+)

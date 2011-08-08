@@ -1,0 +1,18 @@
+Array
+(
+    [dirs] => Array
+        (
+            [0] => .svn
+            [1] => css
+            [2] => images
+            [3] => js
+            [4] => other
+            [5] => php
+        )
+
+    [files] => Array
+        (
+            [0] => 1.txt
+        )
+
+)

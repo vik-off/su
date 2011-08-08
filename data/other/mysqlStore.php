@@ -1,0 +1,1 @@
+<? $mysqlAutoEnterData = 'YTozOntTOjQ6Imhvc3QiO1M6OToiMTI3LjAuMC4xIjtTOjQ6InVzZXIiO1M6NDoicm9vdCI7Uzo4OiJwYXNzd29yZCI7Uzo0OiIwMDAwIjt9'; ?>

@@ -1,0 +1,162 @@
+*{
+	font-family:arial;
+	font-size:13px;
+}
+body{
+	padding:0px;
+	margin:0px;
+}
+img{
+	border:none 0px black;
+}
+li{
+	margin-top:5px;
+}
+ul{
+	margin-top:20px;
+}
+table{
+	border-collapse:collapse;
+}
+th{
+	font-weight:bold;
+	background-color:#E1E1E1;
+	padding:5px 5px;
+	font-size:12px;
+}
+form{
+	margin:0px;
+	padding:0px;
+}
+hr{
+	color:#FFFFFF;
+	margin:1px;
+}
+
+A{
+	color:#505AB4;
+	text-decoration: none;
+	font-weight:bold;
+}
+A:hover{
+	color:#1EC3FE;
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+/* оставить в файле common.css */
+
+#topMessageBox td{
+	padding:0px;
+}
+.c1,.c2,.c3,.c4{
+background-color:#FFFFFF;
+font-size:1px;
+overflow:hidden;
+border-style:none;
+}
+.c2,.c3,.c4{
+height:1px;
+}
+.c4{
+width:5px;
+}
+.c3{
+width:3px;
+}
+.c2{
+width:2px;
+}
+.c1{
+width:1px;
+height:2px;
+}
+
+#topMenuBox{
+	background-color:#EEEEEE;
+	border-bottom:solid 1px #777777;
+	padding:2px 5px;
+	margin-bottom:20px;
+}
+
+a#topMenuToggleBtn{
+	display:inline-block;
+	border:solid 1px transparent;
+	text-decoration:none;
+	background-color:transparent;
+	padding:2px 4px;
+	margin:0px 10px;
+}
+a:hover#topMenuToggleBtn{
+	background-color:#DDDDFF;
+	border:outset 1px #999999;
+}
+a:active#topMenuToggleBtn{
+	border:inset 1px #999999;
+}
+
+a.topMenuOpt{
+	background-color:transparent;
+	color:black;
+	font-weight:normal;
+	padding:2px 5px;
+	display:block;
+}
+a:hover.topMenuOpt{
+	background-color:#0000FF;
+	color:#FFFFFF;
+	font-weight:normal;
+	text-decoration:none;
+}
+/*******/
+
+
+
+.norm{
+	font-weight:normal;
+	color:black;
+}
+.optList{
+	border:double 3px #555555;
+	padding:1px;
+	background-color:#E1E1E1;
+	display:none;
+	position:absolute;
+	padding:4px;
+	text-align:left;
+}
+.slideDivShow{
+	color:#000000;
+	background-color:#FFFFF0;
+	border:solid 1px #DDDDDD;
+}
+.slideDivHide{
+	color:#DDDDDD;
+	background-color:transparent;
+	border:dashed 1px #EEEEEE;
+}
+.hrow{
+	border-style:none;
+	border-top:solid 1px #585858;
+	margin:0px;
+}
+.mainPageOpt{
+	background-color:#EEEEEE;
+	border:solid 1px #999999;
+	border-top-style:none;
+	padding:10px 10px;
+	font-size:14px;
+}
+
+#slideDiv::selection{
+	background-color:transparent;
+}
+.selectable::selection{
+	background-color:#FFF0A5;
+}
+
+.smallHeader{
+	display: block;
+	font-weight: bold;
+	margin: 10px 0px 5px;
+}

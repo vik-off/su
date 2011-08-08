@@ -1,0 +1,20 @@
+a.globals-row{
+	display: block;
+	background-color:#EEEEEE;
+	width:200px;
+	border:solid 1px #AAAAAA;
+	margin:10px;
+	padding:2px 5px;
+	cursor: pointer;
+	font-weight:bold;
+}
+a.globals-row:hover{
+	text-decoration: none;
+}
+.globals-subrow{
+	display: none;
+	margin-left:20px;
+	font-size:14px;
+	line-height:20px;
+	white-space: pre;
+}

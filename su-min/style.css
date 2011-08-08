@@ -1,0 +1,181 @@
+*{font-family:arial;font-size:13px;}
+body{padding:0px;margin:0px;}
+img{border:none 0px black;}
+li{margin-top:5px;}
+ul{margin-top:20px;}
+table{border-collapse:collapse;}
+th{font-weight:bold;background-color:#E1E1E1;padding:5px 5px;font-size:12px;}
+form{margin:0px;padding:0px;}
+hr{color:#FFFFFF;margin:1px;}
+
+A{color:#505AB4;text-decoration: none;font-weight:bold;}
+A:hover{color:#1EC3FE;font-weight:bold;text-decoration:underline;}
+
+/* оставить в файле common.css */
+
+#topMessageBox td{padding:0px;}
+.c1,.c2,.c3,.c4{background-color:#FFFFFF;font-size:1px;overflow:hidden;border-style:none;}
+.c2,.c3,.c4{height:1px;}
+.c4{width:5px;}
+.c3{width:3px;}
+.c2{width:2px;}
+.c1{width:1px;height:2px;}
+
+#topMenuBox{background-color:#EEEEEE;border-bottom:solid 1px #777777;padding:2px 5px;margin-bottom:20px;}
+
+a#topMenuToggleBtn{display:inline-block;border:solid 1px transparent;text-decoration:none;background-color:transparent;padding:2px 4px;margin:0px 10px;}
+a:hover#topMenuToggleBtn{background-color:#DDDDFF;border:outset 1px #999999;}
+a:active#topMenuToggleBtn{border:inset 1px #999999;}
+
+a.topMenuOpt{background-color:transparent;color:black;font-weight:normal;padding:2px 5px;display:block;}
+a:hover.topMenuOpt{background-color:#0000FF;color:#FFFFFF;font-weight:normal;text-decoration:none;}
+/*******/
+
+
+
+.norm{font-weight:normal;color:black;}
+.optList{border:double 3px #555555;padding:1px;background-color:#E1E1E1;display:none;position:absolute;padding:4px;text-align:left;}
+.slideDivShow{color:#000000;background-color:#FFFFF0;border:solid 1px #DDDDDD;}
+.slideDivHide{color:#DDDDDD;background-color:transparent;;border:dashed 1px #EEEEEE;}
+.hrow{border-style:none;border-top:solid 1px #585858;margin:0px;}
+.mainPageOpt{background-color:#EEEEEE;border:solid 1px #999999;border-top-style:none;padding:10px 10px;font-size:14px;}
+
+#slideDiv::selection{background-color:transparent;}
+.selectable::selection{background-color:#FFF0A5;}
+
+.smallHeader{
+	display: block;
+	font-weight: bold;
+	margin: 10px 0px 5px;
+}
+/* кнопки опций */
+a.optBtn{font-size:11px;text-align:center;color:#000026;text-decoration:none;font-weight:bold;background-color:#BBBBBB;width:95px;padding:5px 1px;border:outset 1px #BBBBBB;margin: 3px 0px 0px 0px;display:block;cursor:pointer;}
+a:hover.optBtn{color:#000000;border:outset 1px #CCCCCC;background-color:#C8DEF2;}
+a:active.optBtn{border:inset 1px #CCCCCC;}
+
+/* иконки опций */
+a.optIcon{padding:3px 3px 0px 3px;display:inline-block;border:solid 1px transparent;}
+a:hover.optIcon{border:outset 1px #CCCCCC;background-color:#DDDDFF;}
+a:active.optIcon{border:inset 1px #CCCCCC;}
+
+/* заголовки колонок */
+.active th{background-color:#93C9FF;color:#000000;padding:2px 10px; border:solid 1px #FFFFFF;}
+.passive th{background-color:#DDDDDD;color:#777777;padding:2px 10px; border:solid 1px #FFFFFF;}
+
+/* фиктивные ссылки */
+a.fict{color:black; font-weight:normal; text-decoration:none;display:block;padding:2px 10px;}
+a.fict::selection{background-color:#ACC2FD;}
+
+/* полуфиктивные ссылки */
+a.halffict{color:black; font-weight:normal; display:block;padding:2px 10px;}
+a.halffict::selection{background-color:#ACC2FD;}
+
+#renameBox{background-color:#DDDDDD;padding:3px 20px;border:none 2px #00FF00;}
+#addrBoxLeft,#addrBoxRight{width:350px;font-family:"Arial";margin-bottom:5px;}
+
+.colBox{
+	padding:5px;
+	border:solid 1px #999999;
+	background-color:#FFFFFF;
+}
+.colBox > div{
+	height: 400px;
+	overflow: auto;
+}
+
+#leftCol ,#rightCol{}
+#leftCol td ,#rightCol td{}
+#leftCol th ,#rightCol th{}
+#leftCol img, #rightCol img {vertical-align:middle;margin-right:5px;cursor:pointer;float:left;}
+
+tr.select a, tr.select td{background-color:#508EF5;color:white;font-weight:bold;}
+tr.unselect{background-color:transparent;color:black;font-weight:normal;}
+
+.logDate{font-size:11px;width:110px;display:inline-block;color:#777777;}
+
+a.menuRow{font-size:13px;text-align:left;color:#000026;text-decoration:none;font-weight:bold;background-color:#E5E5E5;width:270px;padding:5px 10px;border:outset 1px #B3C7CD;margin: 3px 0px 0px 0px;display:block;cursor:pointer;}
+a:hover.menuRow{color:#000000;border:outset 1px #CCCCCC;background-color:#C8DEF2;}
+a:active.menuRow{border:inset 1px #CCCCCC;}
+.infoBlock{
+	display:inline;
+	margin:25px 0px;
+	background-color:#EEEEEE;
+	border:solid 1px #CCCCCC;
+	padding:6px 5px;
+}
+
+/* блок данных шириной 1000px по центру экрана */
+.body1000Block{
+	width: 1000px;
+	margin: 0px auto;
+}
+
+/* полоса кнопок таблицы */
+.table_actions{
+	text-align: right;
+}
+
+.table_actions form{
+	display: inline;
+	margin: 2px 3px;
+}
+
+/* ЛЕВОЕ НАВИГАЦИОННОЕ МЕНЮ */
+
+#navigationBar{
+	position: fixed;
+	background-color: #EEEEEE;
+	z-index: 1000;
+	top: 50px;
+	left: 5px;
+	text-align: left;
+	padding: 10px 20px 20px 30px;
+	border: solid 1px #999999;
+	font-size: 14px;
+	max-height: 800px;
+	overflow: auto;
+}
+
+#navigationBar A{
+	display: block;
+	font-weight: normal;
+	font-size: 15px;
+	padding: 0px 5px;
+}
+#navigationBar A:hover{
+	background-color: #EEEEEE;
+	text-decoration: none;
+	
+}
+#navigationBar A.active{
+	background-color: #EEEEEE;
+}
+
+#navBarOpener{
+	display: block;
+	position: fixed;
+	background-color: #EEEEEE;
+	top: 35px;
+	left: 0px;
+	border: solid 1px #999999;
+	padding: 1px 5px;
+}
+
+#navBarCloser{
+	position: absolute;
+	top: 2px;
+	right: 3px;
+}
+
+a.uplevel{
+	padding-left: 20px;
+	background: url('images/up.png') left center no-repeat;
+}
+a.fldr{
+	padding-left: 20px;
+	background: url('images/fldr.png') left center no-repeat;
+}
+a.file{
+	padding-left: 20px;
+	background: url('images/file.png') left center no-repeat;
+}

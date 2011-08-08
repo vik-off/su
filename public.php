@@ -1,0 +1,24 @@
+<?
+require_once('./data/php/func.php');
+
+echoHead();
+?>
+<body>
+	
+<? echoTopRow();?>
+<hr>
+<h2>СКРЫТИЕ ПЛАВАЮЩЕЙ РЕКЛАМЫ</h2>
+<div style='text-align:justify;'>
+	Небольшой скрипт, который может помочь скрыть надоедливую всплывающую рекламу на сайтах. Для начала использования щелкните на ссылку правой кнопкой и выберите пункт меню наподобие "Сохранить в закладки" или "Добавить в избранное". После этого в закладках вашего браузера появится строка "скрыть рекламу".
+	<br>
+	Теперь если вы зашли на сайт со всплывающей рекламой, вы можете вызвать скрипт из закладок. При этом в левом верхнем углу экрана появится небольшое меню с черным фоном и белыми буквами, состоящее из флажков-переключателей (некоторые из них могут быть включены, некоторые - выключены) и названий стелей (на эти названия внимания можно не обращать). Пробуя отключать те или иные флажки, вы наблюдаете за сайтом. Если мешающая вам реклама исчезла, значит вы достигли желаемого результата. Меню можно закрыть щелкнув по крестику на нем, или же еще раз щелкнув по закладке "скрыть рекламу".
+	<br>
+	Если скрипту не удалось скрыть то, что вы хотите, значит разработчик принял достаточные меры для этого, и вопрос может быть решен лишь в индивидуальном порядке. Для этого вы можете обратиться к автору скрипта Новикову Юрию. email: <a href='mailto:yurijnovikov@gmail.com'>yurijnovikov@gmail.com</a>, тел: +38-066-5005-712.
+</div>
+<br><br><a href="javascript:if(document.getElementById('__floatKiller__')){document.body.removeChild(document.getElementById('__floatKiller__'));void(0);}else{__a=[];for(i=0;i<document.styleSheets.length;i++){try{rules=document.styleSheets[i].cssRules;}catch(e){continue;}for(j=0;j<rules.length;j++){if(rules[j].style){try{if(rules[j].style.position=='absolute'||rules[j].style.position=='fixed'){__a.push(rules[j]);}}catch(e){alert(e);}}else if(rules[j].styleSheet){rules1=rules[j].styleSheet.cssRules;for(k=0;k<rules1.length;k++){try{if(rules1[k].style.position=='absolute'||rules1[k].style.position=='fixed'){__a.push(rules1[k]);}}catch(e){alert(e);}}}}}if(document.all){for(i=0;i<document.all.length;i++){n=document.all[i];if(n.style.position=='absolute'||n.style.position=='fixed'){__a.push(n);}}}else{divArr=document.getElementsByTagName('DIV');for(i=0;i<divArr.length;i++){n=divArr[i];if(n.style.position=='absolute'||n.style.position=='fixed'){__a.push(n);}}}_t0=document.createElement('TABLE');_t0.id='__floatKiller__';_t0.style.cssText='z-index:1000000;position:fixed;background-color:black;color:white;';_t0.appendChild(document.createElement('THEAD'));_t1=document.createElement('TBODY');_t0.appendChild(_t1);_t2=document.createElement('TR');_t1.appendChild(_t2);_t3=document.createElement('TD');_t3.innerHTML='<input id=\'_floatKillAll_\' type=\'checkbox\'>  <b style=\'color:white;\'>Все элементы</b>';_t3.style.textAlign='left';_t3.style.padding='2px 5px';_t2.appendChild(_t3);_t4=document.createElement('TD');_t4.innerHTML='<sup id=\'_floatKillClose_\' style=\'margin:0px 5px;font-size:12px;cursor:pointer;color:white;\'>х</sup>';_t2.appendChild(_t4);for(i=0;i<__a.length;i++){_t5=document.createElement('TR');_t6=document.createElement('TD');_t6.innerHTML='<input class=\'_floatKillCh_\' type=\'checkbox\' '+(__a[i].style.display=='none'?'':'checked')+' onClick=\'_t(this,'+i+');\'> '+(__a[i].selectorText||(__a[i].nodeName+(__a[i].id?' id=\''+__a[i].id+'\'':'')+(__a[i].className?' class=\''+__a[i].className+'\'':'')))+' ('+__a[i].style.position+')';_t6.style.padding='1px 3px';_t5.appendChild(_t6);_t1.appendChild(_t5);}document.body.insertBefore(_t0,document.body.firstChild);document.getElementById('_floatKillAll_').onclick=function(){chArr=document.getElementsByTagName('INPUT');if(this.checked){for(i=0;i<chArr.length;i++){if(chArr[i].className=='_floatKillCh_' && !chArr[i].checked){chArr[i].click();}}}else{for(i=0;i<chArr.length;i++){if(chArr[i].className=='_floatKillCh_' && chArr[i].checked){chArr[i].click();}}}};document.getElementById('_floatKillClose_').onclick=function(){document.body.removeChild(document.getElementById('__floatKiller__'));};}function _t(elm,i){if(elm.checked){__a[i].style.display='block';}else{__a[i].style.display='none';}};void(0);">скрыть рекламу</a>
+<br>
+<br>
+<hr>
+<a href="javascript:var d=document;if(d.getElementById('__ynLine__')){d.body.removeChild(document.getElementById('__ynLine__'));}else{var div=d.createElement('DIV');div.id='__ynLine__';div.style.cssText='position:fixed;top:50%;color:red;background-color:black;width:100%;display:block;';div.innerHTML='Линеечка';d.body.appendChild(div, d.body.firstChild);}void(0);">Линеечка</a>
+
+<? echoFooter();?>

@@ -1,0 +1,72 @@
+.infoBlock{
+	display:inline;
+	margin:25px 0px;
+	background-color:#EEEEEE;
+	border:solid 1px #CCCCCC;
+	padding:6px 5px;
+}
+
+/* блок данных шириной 1000px по центру экрана */
+.body1000Block{
+	width: 1000px;
+	margin: 0px auto;
+}
+
+/* полоса кнопок таблицы */
+.table_actions{
+	text-align: right;
+}
+
+.table_actions form{
+	display: inline;
+	margin: 2px 3px;
+}
+
+/* ЛЕВОЕ НАВИГАЦИОННОЕ МЕНЮ */
+
+#navigationBar{
+	position: fixed;
+	background-color: #EEEEEE;
+	z-index: 1000;
+	top: 50px;
+	left: 5px;
+	text-align: left;
+	padding: 10px 20px 20px 30px;
+	border: solid 1px #999999;
+	font-size: 14px;
+	max-height: 800px;
+	overflow: auto;
+}
+
+#navigationBar A{
+	display: block;
+	font-weight: normal;
+	font-size: 15px;
+	padding: 0px 5px;
+}
+#navigationBar A:hover{
+	background-color: #EEEEEE;
+	text-decoration: none;
+	
+}
+#navigationBar A.active{
+	background-color: #EEEEEE;
+}
+
+#navBarOpener{
+	display: block;
+	position: fixed;
+	background-color: #EEEEEE;
+	top: 35px;
+	left: 0px;
+	border: solid 1px #999999;
+	padding: 1px 5px;
+}
+
+#navBarCloser{
+	position: absolute;
+	top: 2px;
+	right: 3px;
+}
+
+

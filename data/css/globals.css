@@ -1,0 +1,15 @@
+.globals-row{
+	background-color:#EEEEEE;
+	width:200px;
+	border:solid 1px #AAAAAA;
+	margin:10px;
+	padding:2px 5px;
+	cursor: hand;
+	font-weight:bold;
+}
+.globals-subrow{
+	display: none;
+	margin-left:20px;
+	font-size:14px;
+	line-height:20px;
+}
