@@ -1,3 +1,67 @@
+
+/** INDEX **/
+.index-infoblock{
+	background-color: #EEE;
+	border: double 3px #999;
+	margin: 30px auto;
+	width: 400px;
+}
+.index-infoblock h1{
+	text-align: center;
+	border-bottom:solid 1px #999;
+	background-color:#777;
+	padding:10px 0px;
+	margin: 0 0 1em;
+	font-size:20px;
+	color:#FFF;
+	font-weight:bold;
+	text-decoration:underline;
+}
+.index-infoblock .items>div{
+	margin: 1em;
+}
+.index-infoblock .footer{
+	text-align: center;
+	border-top:solid 1px #999999;
+	background-color:#777777;
+	padding:2px 0px;
+	font-size:11px;
+	color:#FFFFFF;
+	font-weight:bold;
+}
+.index-menu{
+	width: 400px;
+	text-align: center;
+	margin: auto;
+}
+.index-menu h1{
+	font-size: 20px;
+	font-weight: bold;
+}
+.index-menu a{
+	display:block;
+	font-size:13px;
+	text-align:left;
+	color:#000026;
+	text-decoration:none;
+	font-weight:bold;
+	background-color:#E5E5E5;
+	width:270px;
+	padding:5px 10px;
+	border:outset 1px #B3C7CD;
+	margin: 3px auto;
+	cursor:pointer;
+}
+.index-menu a:hover{
+	color:#000000;
+	border:outset 1px #CCCCCC;
+	background-color:#C8DEF2;
+}
+.index-menu a:active{
+	border:inset 1px #CCCCCC;
+}
+
+/** GLOBALS **/
 a.globals-row{
 	display: block;
 	background-color:#EEEEEE;

@@ -15,6 +15,10 @@ function getVar(&$varname, $defaultVal = '', $type = ''){
 	return $varname;
 }
 
+function href($href){
+	return 'index-new.php?r='.$href;
+}
+
 // ПОЛУЧИТЬ HTML INPUT СОДЕРЖАЩИЙ FORMCODE
 function getFormCodeInput(){
 

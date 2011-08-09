@@ -15,17 +15,17 @@
 			<td width="50"><a href="#" onClick="history.back();return false;">назад</a></td>
 			<td>
 				<form method="get" action="" style="display:inline">
-				<select id="topMenuSelect" name="r" onChange="this.form.submit();">
-					<option value="index">Главная страница
+				<select id="top-menu-select" name="r" onChange="this.form.submit();">
+					<option value="index">главная страница
+					<option value="phpinfo">phpinfo
 					<option value="globals">глобальные массивы и переменные
-					<option value="fileManager.php">файловый менеджер
 					<option value="fileManagerAJAX.php">файловый менеджер AJAX
 					<option value="sqlManager.php">SQL менеджер
 					<option value="fileUpload.php">загрузка файлов на сервер
 					<option value="socketBrowser.php">сокет браузер
 				</select>
 				<script type="text/javascript">
-				$('.topMenuSelect').val('<?= FrontController::get()->requestMethod; ?>');
+				$('#top-menu-select').val('<?= FrontController::get()->requestMethod; ?>');
 				</script>
 				 <input type="submit" name="go" value="Перейти">
 				</form>

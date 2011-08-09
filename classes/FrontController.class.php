@@ -124,6 +124,7 @@ class FrontController {
 	public function display_index(){
 		
 		Layout::get()
+			->setContentPhpFile('index.php')
 			->render();
 	}
 	
@@ -134,16 +135,23 @@ class FrontController {
 			->render();
 	}
 	
+	public function display_phpinfo(){
+		
+		phpinfo();
+		exit;
+	}
+	
 	public function display_login(){
 		
 		Layout::get()
 			->render();
-		echo 'display login';
 	}
 	
 	public function display_404(){
 		
-		echo 'display 404';
+		Layout::get()
+			->setContent('<h1 style="text-align: center;">Страница не найдена</h1>')
+			->render();
 		exit;
 	}
 	
