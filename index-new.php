@@ -16,8 +16,6 @@ header('Content-Type: text/html; charset=utf-8');
 // подключение файлов CMF
 require_once(FS_ROOT.'setup.php');
 
-list($controller, $method, $params) = explode('/', getVar($_GET['r'])) + array('', '', '');
-
 // выполнение приложения
 if(AJAX_MODE)
 	FrontController::get()->ajax();

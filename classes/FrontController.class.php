@@ -1,6 +1,6 @@
 <?
 
-class FrontController {
+class FrontController extends Controller{
 	
 	private static $_instance = null;
 	
@@ -39,6 +39,11 @@ class FrontController {
 	
 	private function _checkAuth(){
 		
+		if(getVar($_POST['action']) == 'login')
+			$this->action_login();
+		
+		if(empty($_SESSION['su']['logged']))
+			$this->display_login();
 	}
 	
 	private function _checkAction(){
@@ -46,7 +51,7 @@ class FrontController {
 		if(isset($_POST['action']) && checkFormDuplication()){
 			
 			$action = $_POST['action'];
-			$method = self::getActionMethodName($action);
+			$method = $this->getActionMethodName($action);
 			
 			if(!method_exists($this, $method))
 				$this->display_404();
@@ -59,7 +64,7 @@ class FrontController {
 	
 	private function _checkDisplay(){
 		
-		$method = self::getDisplayMethodName($this->requestMethod);
+		$method = $this->getDisplayMethodName($this->requestMethod);
 		
 		if(!method_exists($this, $method))
 			$this->display_404();
@@ -74,7 +79,7 @@ class FrontController {
 	/**
 	 * ПОЛУЧИТЬ ИМЯ КЛАССА КОНТРОЛЛЕРА ПО ИДЕНТИФИКАТОРУ
 	 * @param string $controllerIdentifier - идентификатор контроллера
-	 * @return string|null - имя класса контроллера или null, если контроллер не найден
+	 * @return string|null - имя класса  контроллера или null, если контроллер не найден
 	 */
 	public static function getControllerClassName($controllerIdentifier){
 			
@@ -90,31 +95,6 @@ class FrontController {
 		$controller = str_replace(' ', '', ucwords(str_replace('-', ' ', strtolower($controllerIdentifier)))).'Controller';
 		return class_exists($controller) ? $controller : null;
 	}
-	
-	// ПОЛУЧИТЬ ИМЯ МЕТОДА ОТОБРАЖЕНИЯ ПО ИДЕНТИФИКАТОРУ
-	public static function getDisplayMethodName($method){
-	
-		// преобразует строку вида 'any-Method-name' в 'any_method_name'
-		$method = 'display_'.(strlen($method) ? strtolower(str_replace('-', '_', $method)) : 'default');
-		return $method;
-	}
-	
-	// ПОЛУЧИТЬ ИМЯ МЕТОДА ДЕЙСТВИЯ ПО ИДЕНТИФИКАТОРУ
-	public static function getActionMethodName($method){
-	
-		// преобразует строку вида 'any-Method-name' в 'any_method_name'
-		$method = 'action_'.strtolower(str_replace('-', '_', $method));
-		return $method;
-	}
-	
-	// ПОЛУЧИТЬ ИМЯ AJAX МЕТОДА ПО ИДЕНТИФИКАТОРУ
-	public static function getAjaxMethodName($method){
-	
-		// преобразует строку вида 'any-Method-name' в 'any_method_name'
-		$method = 'ajax_'.strtolower(str_replace('-', '_', $method));
-		return $method;
-	}
-	
 	
 	
 	/////////////////////
@@ -141,12 +121,23 @@ class FrontController {
 		exit;
 	}
 	
-	public function display_login(){
+	public function display_file_manager(){
 		
 		Layout::get()
+			->setTitle('Файловый менеджер')
+			->setContentPhpFile('file-manager.php')
 			->render();
 	}
 	
+	public function display_login(){
+		
+		Layout::get()->loginPage();
+	}
+	
+	public function display_clear_session(){
+		$_SESSION = array();
+		redirect('');
+	}
 	public function display_404(){
 		
 		Layout::get()
@@ -162,10 +153,18 @@ class FrontController {
 	
 	public function action_login(){
 		
+		if (sha1(getVar($_POST['login'])) == '53fb7ec2b04bbeecd8bc0902b217fb0b03165fde' &&
+			sha1(getVar($_POST['pass'])) == 'c776f7b86a4701a3e3a94c253901006cf31e6d32'
+		){
+			$_SESSION['su']['logged'] = 1;
+			reload();
+		}
 	}
 	
 	public function action_logout(){
 		
+		$_SESSION['su']['logged'] = 0;
+		reload();
 	}
 	
 	

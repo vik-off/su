@@ -15,7 +15,7 @@
 	<h1>Доступные действия</h1>
 	<a href="<?= href('globals'); ?>">Глобальные массивы и переменные</a>
 	<a href="<?= href('phpinfo'); ?>">phpinfo</a>
-	<a href='fileManagerAJAX.php'>Файловый менеджер AJAX</a>
+	<a href="<?= href('file-manager'); ?>">Файловый менеджер AJAX</a>
 	<a href='sqlManager.php'>SQL менеджер</a>
 	<a href='fileUpload.php'>Загрузка файлов на сервер</a>
 	<a href='public.php'>Открытая страничка</a>

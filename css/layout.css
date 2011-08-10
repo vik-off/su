@@ -1,10 +1,12 @@
 *{
-	font-family:arial;
-	font-size:13px;
+	font-family: arial, sans-serif;
+	font-size: 13px;
 }
-body{
+html, body{
 	padding:0px;
 	margin:0px;
+	width: 100%;
+	height: 100%;
 }
 img{
 	border:none 0px black;
@@ -33,18 +35,66 @@ hr{
 	margin:1px;
 }
 
-A{
+a{
 	color:#505AB4;
 	text-decoration: none;
 	font-weight:bold;
 }
-A:hover{
+a:hover{
 	color:#1EC3FE;
 	font-weight:bold;
 	text-decoration:underline;
 }
 
-/* оставить в файле common.css */
+/** LOGIN PAGE **/
+
+#login-screen{
+	position: relative;
+	margin: auto;
+	margin-top: -80px;
+	top: 50%;
+	width: 300px;
+	border: solid 5px #AAA;
+	padding: 10px;
+	-moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px;
+}
+#login-screen .explain{
+	text-align: center;
+	font-style: italic;
+	margin-top: 5px;
+}
+
+/** РАЗНОЕ **/
+
+.inline{
+	display: inline;
+	margin: 0px;
+	padding: 0px;
+}
+#addit-menu{
+	display:none;
+	position:absolute;
+	border:solid 1px black;
+	width:200px;
+	right: 50px;
+	margin-top: 2px;
+	background-color:#EEEEEE;
+	border:solid 1px #777777;
+}
+
+#addit-menu a{
+	background-color:transparent;
+	color:black;
+	font-weight:normal;
+	padding:2px 5px;
+	display:block;
+}
+#addit-menu a:hover{
+	background-color:#0000FF;
+	color:#FFFFFF;
+	font-weight:normal;
+	text-decoration:none;
+}
 
 #topMessageBox td{
 	padding:0px;
@@ -93,20 +143,6 @@ a:hover#topMenuToggleBtn{
 }
 a:active#topMenuToggleBtn{
 	border:inset 1px #999999;
-}
-
-a.topMenuOpt{
-	background-color:transparent;
-	color:black;
-	font-weight:normal;
-	padding:2px 5px;
-	display:block;
-}
-a:hover.topMenuOpt{
-	background-color:#0000FF;
-	color:#FFFFFF;
-	font-weight:normal;
-	text-decoration:none;
 }
 /*******/
 

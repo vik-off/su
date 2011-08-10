@@ -216,6 +216,12 @@ class Layout{
 		return $output;
 	}
 	
+	public function loginPage(){
+		
+		include($this->_tplPath.'login.php');
+		exit();
+	}
+	
 	/** RENDER ALL */
 	public function render($boolReturn = FALSE){
 		
@@ -228,6 +234,11 @@ class Layout{
 			return ob_get_clean();
 		else
 			return $this;
+	}
+	
+	public function __get($name){
+		
+		return isset($this->$name) ? $this->$name : '';
 	}
 	
 }

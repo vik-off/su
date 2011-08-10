@@ -19,6 +19,21 @@ function href($href){
 	return 'index-new.php?r='.$href;
 }
 
+/** RELOAD */
+function reload(){
+
+	$url = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+	header('location: '.$url);
+	exit();
+}
+
+/** REDIRECT */
+function redirect($href){
+	
+	header('location: '.href($href));
+	exit();
+}
+
 // ПОЛУЧИТЬ HTML INPUT СОДЕРЖАЩИЙ FORMCODE
 function getFormCodeInput(){
 
@@ -26,7 +41,7 @@ function getFormCodeInput(){
 		$_SESSION['su']['userFormChecker'] = array('current' => 0, 'used' => array());
 	
 	$_SESSION['su']['userFormChecker']['current']++;
-	return '<input type="hidden" name="formCode" value="'.$_SESSION['userFormChecker']['current'].'" />';
+	return '<input type="hidden" name="formCode" value="'.$_SESSION['su']['userFormChecker']['current'].'" />';
 }
 
 // ПРОВЕРКА ВАЛИДНОСТИ ФОРМЫ

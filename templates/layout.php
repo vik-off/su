@@ -7,6 +7,7 @@
 	<link rel="stylesheet" href="css/layout.css" type="text/css" />
 	<link rel="stylesheet" href="css/content.css" type="text/css" />
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
 </head>
 <body>
 	<div id="topMenuBox">
@@ -19,7 +20,7 @@
 					<option value="index">главная страница
 					<option value="phpinfo">phpinfo
 					<option value="globals">глобальные массивы и переменные
-					<option value="fileManagerAJAX.php">файловый менеджер AJAX
+					<option value="file-manager">файловый менеджер
 					<option value="sqlManager.php">SQL менеджер
 					<option value="fileUpload.php">загрузка файлов на сервер
 					<option value="socketBrowser.php">сокет браузер
@@ -31,12 +32,30 @@
 				</form>
 			</td>
 			<td width="15">
-				<a id="topMenuToggleBtn" onClick="if(\$(\"additionalMenu\").style.display==\"none\"){\$(\"additionalMenu\").style.display=\"block\";}else{\$(\"additionalMenu\").style.display=\"none\";}">&#9660;</a>
-				<div id="additionalMenu" style="display:none;position:absolute;border:solid 1px black;width:200px;margin-left:-180px;background-color:#EEEEEE;border:solid 1px #777777;">
-					<a class="topMenuOpt" href="?clearSession=all" onClick="this.parentNode.style.display = \"none\";">Очистить текущую сессию</a>
+				<a id="topMenuToggleBtn" onClick="$('#addit-menu').toggle();">&#9660;</a>
+				<div id="addit-menu" style="">
+					<a href="<?= href('clear-session'); ?>">Очистить текущую сессию</a>
 				</div>
+				<script type="text/javascript">
+				$(function(){
+					
+					$('#addit-menu a').live('click', function(){
+						$('#addit-menu').hide();
+					});
+					$(window).keypress(function(e){
+						if(e.keyCode == 27)
+							$('#addit-menu').hide();
+					});
+				});
+				</script>
 			</td>
-			<td width="50"><button onClick=\"location.href = "?exit=yes";\">Выход</button></td>
+			<td width="50">
+				<form class="" action="" method="post">
+					<?= FORMCODE; ?>
+					<input type="hidden" name="action" value="logout" />
+					<input type="submit" value="Выход" />
+				</form>
+			</td>
 		</tr>
 		</table>
 	</div>
