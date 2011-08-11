@@ -82,3 +82,157 @@ a.globals-row:hover{
 	line-height:20px;
 	white-space: pre;
 }
+
+/** FILE MANAGER **/
+
+#fm-wrap{
+	margin: auto;
+	background-color:#E5E5E5;
+	border:solid 1px #777777;
+}
+.fm-head-title{
+	background-color:#508EF5;
+	color:white;
+	font-weight:bold;
+	padding:3px 10px;
+}
+
+/* иконки опций */
+a.fm-opt-icon{
+	padding:3px 3px 0px 3px;
+	display:inline-block;
+	border:solid 1px transparent;
+}
+a.fm-opt-icon:hover{
+	border:outset 1px #CCCCCC;
+	background-color:#DDDDFF;
+}
+a.fm-opt-icon:active{
+	border:inset 1px #CCCCCC;
+}
+.fm-file-options{
+	margin: 2px auto 5px;
+}
+/* кнопки опций */
+.fm-file-options a{
+	display:block;
+	font-size:11px;
+	text-align:center;
+	color:#000026;
+	text-decoration:none;
+	font-weight:bold;
+	background-color:#C9C9C9;
+	width:95px;
+	padding:5px 1px;
+	border:outset 1px #BBBBBB;
+	cursor:pointer;
+}
+.fm-file-options a:hover{
+	color:#000000;
+	border:outset 1px #CCCCCC;
+	background-color:#C8DEF2;
+}
+.fm-file-options a:active{
+	border:inset 1px #CCCCCC;
+}
+#fm-addr-left, #fm-addr-right{
+	width:350px;
+	font-family:"Arial";
+	margin-bottom:5px;
+}
+
+.fm-col-box{
+	padding:5px;
+	border:solid 1px #999999;
+	background-color:#FFFFFF;
+}
+.fm-col-box > div{
+	height: 500px;
+	overflow: auto;
+}
+/* заголовки колонок */
+.fm-col-active th{
+	background-color:#93C9FF;
+	color:#000000;
+	padding:2px 10px;
+	border:solid 1px #FFFFFF;
+}
+.fm-col-inactive th{
+	background-color:#DDDDDD;
+	color:#777777;
+	padding:2px 10px;
+	border:solid 1px #FFFFFF;
+}
+
+/* фиктивные ссылки */
+a.fm-jlink{
+	color:black;
+	font-weight:normal;
+	text-decoration:none;
+	display:block;
+	padding:2px 10px;
+}
+a.fm-jlink::selection{
+	background-color:#ACC2FD;
+}
+
+/* полуфиктивные ссылки */
+a.fm-half-jlink{
+	color:black;
+	font-weight:normal;
+	display:block;
+	padding:2px 10px;
+}
+a.fm-half-jlink::selection{
+	background-color:#ACC2FD;
+}
+
+tr.fm-select a, tr.fm-select td{
+	background-color:#508EF5;
+	color:white;
+	font-weight:bold;
+}
+tr.fm-unselect{
+	background-color:transparent;
+	color:black;
+	font-weight:normal;
+}
+
+#fm-left-col ,#fm-right-col{
+}
+#fm-left-col td ,#fm-right-col td{
+}
+#fm-left-col th ,#fm-right-col th{
+}
+#fm-left-col img, #fm-right-col img {
+	vertical-align:middle;
+	margin-right:5px;
+	cursor:pointer;
+	float:left;
+}
+
+#fm-log-title{
+	font-size:10px;
+	padding:0px 10px;
+	background-color:#93C9FF;
+}
+#fm-log-body{
+	background-color:#FFFFFF;
+	border:solid 1px #777777;
+	border-top-style:none;
+	height:60px;
+	padding:2px 4px;
+	overflow:auto;
+}
+.fm-log-date{
+	font-size:11px;
+	width:110px;
+	display:inline-block;
+	color:#777777;
+}
+
+
+	
+
+
+
