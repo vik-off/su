@@ -8,6 +8,41 @@
 	<link rel="stylesheet" href="css/content.css" type="text/css" />
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 	<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
+	<script type="text/javascript">
+	
+		function href(href){
+			return 'index-new.php?r=' + href;
+		}
+
+		// расширения стандартного объекта Date
+		Date.prototype.getYNString = function(type){
+
+			var months = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+			var seconds = this.getSeconds();
+			var minutes = this.getMinutes();
+			seconds = seconds < 10 ? ('0' + seconds) : seconds;
+			minutes = minutes < 10 ? ('0' + minutes) : minutes;
+			
+			switch(type){
+				case 'date':return this.getDate() + ' ' + months[this.getMonth()] + ' ' + this.getFullYear();
+				case 'time':return this.getHours() + ':' + minutes + ':' + seconds;
+				default:return this.getDate() + ' ' + months[this.getMonth()] + ' ' + this.getFullYear() + ' ' + this.getHours() + ':' + minutes + ':' + seconds;
+			}
+		}
+		
+		$(function(){
+			
+			VikDebug.init();
+			
+			// отлов ajax-ошибок
+			$.ajaxSetup({
+				error: function(xhr){
+					trace(xhr.responseText);
+				}
+			});
+		});
+	
+	</script>
 </head>
 <body>
 	<div id="topMenuBox">

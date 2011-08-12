@@ -14,9 +14,6 @@ function getDir($path = '.'){
 		else{$fTree['files'][] = $elm;}
 	}
 	closedir($d);
-	$f = fopen('1.txt', 'w');
-	fwrite($f, print_r($fTree, 1));
-	fclose($f);
 	return $fTree;
 }
 

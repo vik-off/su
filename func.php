@@ -75,3 +75,15 @@ function lockFormCode(&$code){
 		$_SESSION['userFormChecker']['used'][$code] = 1;
 }
 	
+function sizeFormat($byteSize){
+	
+	$byteSize=abs($byteSize);
+	if($byteSize > 1073741824)
+		return number_format($byteSize / 1073741824, 2, ".", " ")."&nbsp;Гб";
+	elseif($byteSize > 1048576)
+		return number_format($byteSize / 1048576, 2, ".", " ")."&nbsp;Мб";
+	else
+		return number_format($byteSize / 1024, 2, ".", " ")."&nbsp;кб";
+}
+
+	

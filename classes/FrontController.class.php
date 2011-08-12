@@ -72,8 +72,14 @@ class FrontController extends Controller{
 		$this->$method($this->requestParams);
 	}
 	
-	private function _performAjax(){
+	private function _checkAjax(){
 		
+		$method = $this->getAjaxMethodName($this->requestMethod);
+		
+		if(!method_exists($this, $method))
+			$this->display_404();
+		
+		$this->$method($this->requestParams);
 	}
 	
 	/**
@@ -140,9 +146,13 @@ class FrontController extends Controller{
 	}
 	public function display_404(){
 		
-		Layout::get()
-			->setContent('<h1 style="text-align: center;">Страница не найдена</h1>')
-			->render();
+		if(AJAX_MODE){
+			echo 'Страница не найдена';
+		}else{
+			Layout::get()
+				->setContent('<h1 style="text-align: center;">Страница не найдена</h1>')
+				->render();
+		}
 		exit;
 	}
 	
@@ -167,6 +177,48 @@ class FrontController extends Controller{
 		reload();
 	}
 	
+
+	////////////////////
+	//////  AJAX  //////
+	////////////////////
+	
+	public function ajax_fm_get_tree(){
+		
+		$data = array('errcode' => 0, 'errmsg' => '', 'curDir' => realpath('.'), 'dirs' => array(), 'files' => array());
+		
+		$curDir = getVar($_GET['dir']);
+		if(!is_dir($curDir)){
+			$data['errcode'] = 1;
+			$data['errmsg'] = 'Папка не найдена';
+			echo json_encode($data);
+			return;
+		}
+		if(!is_readable($curDir)){
+			$data['errcode'] = 2;
+			$data['errmsg'] = 'Нет прав на чтение папки';
+			echo json_encode($data);
+			return;
+		}
+		
+		$data['curDir'] = $curDir;
+		
+		foreach(scandir($curDir) as $elm){
+			if($elm == '.' || $elm == '..')
+				continue;
+			$fullName = $curDir.'/'.$elm;
+			$isDir = is_dir($fullName);
+			$owner = posix_getpwuid(fileowner($fullName));
+			$data[$isDir ? 'dirs' : 'files'][] = array(
+				'name' => $elm,
+				'perms' => substr(sprintf('%o', fileperms($fullName)), -3),
+				'owner' => $owner['name'],
+				'size' => $isDir ? '-' : sizeFormat(filesize($fullName)),
+			);
+		}
+		
+		echo json_encode($data);
+		return;
+	}
 	
 }
 

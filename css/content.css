@@ -151,17 +151,19 @@ a.fm-opt-icon:active{
 	overflow: auto;
 }
 /* заголовки колонок */
-.fm-col-active th{
-	background-color:#93C9FF;
-	color:#000000;
-	padding:2px 10px;
-	border:solid 1px #FFFFFF;
-}
-.fm-col-inactive th{
+.fm-col>thead th{
 	background-color:#DDDDDD;
 	color:#777777;
 	padding:2px 10px;
 	border:solid 1px #FFFFFF;
+	cursor: pointer;
+}
+.fm-col.fm-col-active>thead th{
+	background-color:#93C9FF;
+	color:#000000;
+	padding:2px 10px;
+	border:solid 1px #FFFFFF;
+	cursor: default;
 }
 
 /* фиктивные ссылки */
@@ -187,15 +189,10 @@ a.fm-half-jlink::selection{
 	background-color:#ACC2FD;
 }
 
-tr.fm-select a, tr.fm-select td{
-	background-color:#508EF5;
-	color:white;
-	font-weight:bold;
-}
-tr.fm-unselect{
-	background-color:transparent;
-	color:black;
-	font-weight:normal;
+.fm-col.fm-col-active tr.fm-select *{
+	background-color:#508EF5 !important;
+	color:white !important;
+	font-weight:bold !important;
 }
 
 #fm-left-col ,#fm-right-col{
@@ -223,6 +220,7 @@ tr.fm-unselect{
 	height:60px;
 	padding:2px 4px;
 	overflow:auto;
+	font-size: 11px;
 }
 .fm-log-date{
 	font-size:11px;
