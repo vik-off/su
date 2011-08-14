@@ -69,7 +69,7 @@ var FileManager = {
 					FileManager.selected[curCol] = null;
 					
 					// var_dump(response, 'a'); return;
-					FileManager._createUpItem(curCol);
+					FileManager.html[curCol].tbody.append(FileManager._createUpItem(curCol));
 					for(var i = 0; i < response.dirs.length; i++)
 						FileManager.html[curCol].tbody.append(FileManager._createTreeItem('dir', response.dirs[i], curCol));
 						
@@ -81,11 +81,18 @@ var FileManager = {
 	},
 	
 	_createUpItem: function(col){
-		return $('<a id="fm-left-col-up" class="fm-jlink" href="#"></a>')
-			.click(function(){})
-			.dblclick(function(){})
-			.append('<img alt="up" align="middle" src="data/images/up.png">')
-			.append('<span>..</span>');
+		return $('<tr></tr>')
+			.append($('<td></td>')
+				.append($('<a class="fm-jlink" href="#"></a>')
+					.click(this.fastMove
+						? function(){return false;}
+						: function(){FileManager.select('..', '..', col, this); return false;})
+					.dblclick(this.fastMove
+						? function(){return false;}
+						: function(){return false;})
+					.append('<img alt="up" align="middle" src="data/images/up.png">')
+					.append('<span>..</span>')))
+			.append('<td></td>');
 	},
 	
 	_createTreeItem: function(type, elm, curCol){
@@ -124,7 +131,7 @@ var FileManager = {
 		else{
 			return this.fastMove
 				? function(){trace(type + ' ' + elm.name + ' ' + curCol); return false;}
-				: function(){trace(type + ' ' + elm.name + ' ' + curCol); return false;};
+				: function(){FileManager.select(type, elm, curCol, this); return false;};
 		}
 	},
 	

@@ -34,14 +34,8 @@
 	<td class="fm-col-box">
 		<div>
 			<table id="fm-left-col" class="fm-col" border=0 align="left">
-			<thead>
-			<tr onclick="FileManager.activateCol('left');">
-				<th>Имя</th>
-				<th>Размер</th>
-			</tr>
-			</thead>
-			<tbody><tr><td><a id="fm-left-col-up" class="fm-jlink" href="#"><img alt="up" align="middle" src="data/images/up.png">..</a></td></tr></tbody>
-			<tbody id="fm-left-col-tbody"></tbody>
+				<thead><tr onclick="FileManager.activateCol('left');"><th>Имя</th><th>Размер</th></tr></thead>
+				<tbody id="fm-left-col-tbody"></tbody>
 			</table>
 		</div>
 	</td>
@@ -49,14 +43,8 @@
 	<td class="fm-col-box">
 		<div>
 			<table id="fm-right-col" class="fm-col" border=0 align="left">
-			<thead>
-			<tr onclick="FileManager.activateCol('right');">
-				<th>Имя</th>
-				<th>Размер</th>
-			</tr>
-			</thead>
-			<tbody><tr><td><a id="fm-right-col-up" class="fm-jlink" href="#"><img alt="up" align="middle" src="data/images/up.png">..</a></td></tr></tbody>
-			<tbody id="fm-right-col-tbody"></tbody>
+				<thead><tr onclick="FileManager.activateCol('right');"><th>Имя</th><th>Размер</th></tr></thead>
+				<tbody id="fm-right-col-tbody"></tbody>
 			</table>
 		</div>
 	</td>

@@ -186,7 +186,7 @@ class FrontController extends Controller{
 		
 		$data = array('errcode' => 0, 'errmsg' => '', 'curDir' => realpath('.'), 'dirs' => array(), 'files' => array());
 		
-		$curDir = getVar($_GET['dir']);
+		$curDir = unescape(getVar($_GET['dir']));
 		if(!is_dir($curDir)){
 			$data['errcode'] = 1;
 			$data['errmsg'] = 'Папка не найдена';
@@ -207,11 +207,11 @@ class FrontController extends Controller{
 				continue;
 			$fullName = $curDir.'/'.$elm;
 			$isDir = is_dir($fullName);
-			$owner = posix_getpwuid(fileowner($fullName));
+			// $owner = posix_getpwuid(fileowner($fullName));
 			$data[$isDir ? 'dirs' : 'files'][] = array(
 				'name' => $elm,
 				'perms' => substr(sprintf('%o', fileperms($fullName)), -3),
-				'owner' => $owner['name'],
+				// 'owner' => $owner['name'],
 				'size' => $isDir ? '-' : sizeFormat(filesize($fullName)),
 			);
 		}

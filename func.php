@@ -86,4 +86,9 @@ function sizeFormat($byteSize){
 		return number_format($byteSize / 1024, 2, ".", " ")."&nbsp;кб";
 }
 
+function unescape($string){
+	if(get_magic_quotes_gpc())
+		 return stripslashes($string);
+}
+
 	

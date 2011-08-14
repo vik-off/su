@@ -186,7 +186,7 @@ a.fm-half-jlink{
 	padding:2px 10px;
 }
 a.fm-half-jlink::selection{
-	background-color:#ACC2FD;
+	/* background-color: transparent; */
 }
 
 .fm-col.fm-col-active tr.fm-select *{
