@@ -186,7 +186,7 @@ class FrontController extends Controller{
 		
 		$data = array('errcode' => 0, 'errmsg' => '', 'curDir' => realpath('.'), 'dirs' => array(), 'files' => array());
 		
-		$curDir = unescape(getVar($_GET['dir']));
+		$curDir = realpath(unescape(getVar($_GET['dir'])));
 		if(!is_dir($curDir)){
 			$data['errcode'] = 1;
 			$data['errmsg'] = 'Папка не найдена';

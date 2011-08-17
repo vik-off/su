@@ -1,7 +1,5 @@
 
 var FileManager = {
-	curDirL: '',	// адрес в левой колонке
-	curDirR: '',	// адрес в правой колонке
 	curCol: 0,   	// текущая столбец (для заполнения списком файлов)
 	response: '',	// переменная, содержащая ответ сервера (как правило, объект)
 	act: false,		// текущее действие
@@ -120,12 +118,12 @@ var FileManager = {
 		}
 	},
 	
-	_createClickHandler: function(type, elm, curCol){
+	_createClickHandler: function(type, elm, col){
 		// папки
 		if(type == 'dir'){
 			return this.fastMove
-				? function(){trace(this + ' ' + type + ' ' + elm.name + ' ' + curCol); return false;}
-				: function(){FileManager.select(type, elm, curCol, this); return false;};
+				? function(){FileManager.cd(elm.name, col); trace(this + ' ' + type + ' ' + elm.name + ' ' + col); return false;}
+				: function(){FileManager.select(type, elm, col, this); return false;};
 		}
 		// файлы
 		else{
@@ -179,6 +177,9 @@ var FileManager = {
 		}
 	},
 	
+	_formatPath: function(){
+		
+	},
 	send: function(sendMsg){
 		XHR.open("POST", 'data/php/ajax.php');
 		XHR.setRequestHeader("Content-type","application/x-www-form-urlencoded");
@@ -251,13 +252,10 @@ var FileManager = {
 	},
 	
 	cd: function(dirname, col){
-		return;
-		if(this.block){return;}
+		if(this.block) return;
 		this.block = true;
-		this.act = 'FileManager';
-		this.curCol = col;
-		// alert(encodeURI((col == 1) ? this.curDirL : this.curDirR)); return false;
-		this.send('act=showTree&curDir=' + encodeURI((col == 1) ? this.curDirL : this.curDirR) + '&getDir=' + encodeURIComponent(dirname || ''));
+		this.curDir[col] = this.curDir[col]
+		this.displayFileTree();
 	},
 	
 	jump: function(path, col){
