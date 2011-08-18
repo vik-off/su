@@ -68,7 +68,7 @@ var FileManager = {
 					FileManager.html[curCol].addr.val(response.curDir);
 					FileManager.selected[curCol] = null;
 					
-					// var_dump(response, 'a'); return;
+					// var_dump(response, 'a');
 					FileManager.html[curCol].tbody.append(FileManager._createUpItem(curCol));
 					for(var i = 0; i < response.dirs.length; i++)
 						FileManager.html[curCol].tbody.append(FileManager._createTreeItem('dir', response.dirs[i], curCol));

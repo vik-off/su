@@ -38,6 +38,7 @@
 			$.ajaxSetup({
 				error: function(xhr){
 					trace(xhr.responseText);
+					return true;
 				}
 			});
 		});

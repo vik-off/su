@@ -189,7 +189,7 @@ class FrontController extends Controller{
 		$curDir = unescape(getVar($_GET['dir']));
 		if(!is_dir($curDir)){
 			$data['errcode'] = 1;
-			$data['errmsg'] = 'Папка не найдена';
+			$data['errmsg'] = 'Папка "'.$curDir.'" не найдена';
 			echo json_encode($data);
 			return;
 		}
@@ -213,6 +213,7 @@ class FrontController extends Controller{
 				'perms' => substr(sprintf('%o', fileperms($fullName)), -3),
 				// 'owner' => $owner['name'],
 				'size' => $isDir ? '-' : sizeFormat(filesize($fullName)),
+				'emtime' => date('Y-m-d H:i:s', filemtime($fullName)),
 			);
 		}
 		

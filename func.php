@@ -87,8 +87,9 @@ function sizeFormat($byteSize){
 }
 
 function unescape($string){
-	if(get_magic_quotes_gpc())
-		 return stripslashes($string);
+	 return get_magic_quotes_gpc()
+		? stripslashes($string)
+		: $string;
 }
 
 	
