@@ -16,7 +16,7 @@ function getVar(&$varname, $defaultVal = '', $type = ''){
 }
 
 function href($href){
-	return 'index-new.php?r='.$href;
+	return 'index.php?r='.$href;
 }
 
 /** RELOAD */
@@ -90,6 +90,14 @@ function unescape($string){
 	 return get_magic_quotes_gpc()
 		? stripslashes($string)
 		: $string;
+}
+
+function strDate($timestamp = null){
+	
+	if(is_null($timestamp))
+		$timestamp = time();
+	static $months = array('янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек');
+	return date('d ', $timestamp).$months[date('m', $timestamp) - 1].date(' Y H:i:s', $timestamp);
 }
 
 	

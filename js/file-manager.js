@@ -5,7 +5,7 @@ var FileManager = {
 	act: false,		// текущее действие
 		
 	mustReload: false,	// флаг перезагрузки (чтобы перезагрузить второй столбец)
-	fastMove: false,	// флаг быстрой навигации (без выделения элемента)
+	fastMove: true,	// флаг быстрой навигации (без выделения элемента)
 	
 	selected: false,// прямая ссылка на выделенный DOM элемент
 	target: false,	// имя выделенного файла или папки
@@ -15,6 +15,8 @@ var FileManager = {
 		
 	activeColVal: false,	//активный столбец (заголовок выделен синим)
 	html: {
+		btnFastMove: null,
+		colBoxex: null,
 		left: {
 			addr: null,
 			col: null,
@@ -31,13 +33,13 @@ var FileManager = {
 		right: null
 	},
 	selected: {
-		left: null, // {name: '', type: '', html: '', htmlTr}
-		right: null
+		left: [], // {name: '', type: '', html: '', htmlTr}
+		right: []
 	},
 	
 	init: function(path){
 		
-		this._bindKeyPress();
+		this._bindEvents();
 		this._findHTML();
 		
 		this.curDir.left = this.curDir.right = path;
@@ -45,7 +47,42 @@ var FileManager = {
 		this.displayFileTree(['left', 'right']);
 	},
 	
+	_bindEvents: function(){
+		
+		$(window).keypress(function(e){
+			
+			switch(e.keyCode){
+				case 113: // F2
+					trace("f2");
+					return false;
+				case 46: // DELETE
+					trace("delete");
+					break;
+			}
+		});
+	},
+	
+	_findHTML: function(){
+		this.html = {
+			btnFastMove: $('#btn-fast-mode'),
+			colBoxex: $('.fm-col-box'),
+			left: {
+				addr: $('#fm-addr-left'),
+				col: $('#fm-left-col'),
+				tbody: $('#fm-left-col-tbody'),
+			},
+			right: {
+				addr: $('#fm-addr-right'),
+				col: $('#fm-right-col'),
+				tbody: $('#fm-right-col-tbody'),
+			}
+		}
+	},
+	
 	displayFileTree: function(cols){
+		
+		this.block = true;
+		this.showLoadIcon();
 		
 		for(var ci = 0; ci < cols.length; ci++){
 			(function(col, ci, ct){
@@ -53,6 +90,7 @@ var FileManager = {
 					
 					if(response.errcode){
 						FileManager.block = false;
+						FileManager.hideLoadIcon();
 						trace(response.errmsg);
 						return;
 					}
@@ -61,7 +99,7 @@ var FileManager = {
 					FileManager.html[col].addr.val(response.curDir);
 					FileManager.selected[col] = null;
 					
-					// var_dump(response, 'a');
+					var_dump(response, 'o=c/files a');
 					FileManager.html[col].tbody.append(FileManager._createUpItem(col));
 					for(var i = 0; i < response.dirs.length; i++)
 						FileManager.html[col].tbody.append(FileManager._createTreeItem('dir', response.dirs[i], col));
@@ -69,8 +107,11 @@ var FileManager = {
 					for(var i = 0; i < response.files.length; i++)
 						FileManager.html[col].tbody.append(FileManager._createTreeItem('file', response.files[i], col));
 					
-					if(ci == ct)
+					// последняя итерация
+					if(ci == ct){
 						FileManager.block = false;
+						FileManager.hideLoadIcon();
+					}
 						
 				}, 'json');
 			})(cols[ci], ci, cols.length - 1);
@@ -79,16 +120,15 @@ var FileManager = {
 	
 	_createUpItem: function(col){
 		return $('<tr></tr>')
-			.append($('<td></td>')
-				.append($('<a class="fm-jlink" href="#"></a>')
-					.click(this.fastMove
-						? function(){FileManager.cd('..', col); return false;}
-						: function(){FileManager.select('..', '..', col, this); return false;})
-					.dblclick(this.fastMove
-						? function(){return false;}
-						: function(){FileManager.cd('..', col); return false;})
-					.append('<img alt="up" align="middle" src="data/images/up.png">')
-					.append('<span>..</span>')))
+			.append('<td class="fm-col-icon"><img alt="f" src="data/images/up.png"></td>')
+			.append($('<td class="fm-col-name">..</td>')
+				.click(this.fastMove
+					? function(){FileManager.cd('..', col); return false;}
+					: function(){FileManager.select('..', '..', col, this); return false;})
+				.dblclick(this.fastMove
+					? function(){return false;}
+					: function(){FileManager.cd('..', col); return false;})
+			)
 			.append('<td></td>');
 	},
 	
@@ -96,27 +136,24 @@ var FileManager = {
 		// папки
 		if(type == 'dir'){
 			return $('<tr></tr>')
-				.append($('<td></td>')
-					.append($('<a class="fm-half-jlink" href="#"></a>')
-						 .click(FileManager._createClickHandler(type, elm, curCol))
-						 .dblclick(FileManager._createDblClickHandler(type, elm, curCol))
-						 .append('<img alt="d" src="data/images/fldr.png">')
-						 .append('<span>' + elm.name + '</span>')
-						 // .append('<input type="text" disabled="disabled" value="' + elm.name + '" size="' + elm.name.length + '" />')
-						 // .append('<button class="fm-text-button" onclick="return false;">' + elm.name + '</button>')
-						 ))
-				.append('<td style="text-align: center;">-</td>');
+				.append('<td class="fm-col-icon"><img alt="d" src="data/images/fldr.png"></td>')
+				.append($('<td class="fm-col-name">' + elm.name + '</td>')
+					 .click(FileManager._createClickHandler(type, elm, curCol))
+					 .dblclick(FileManager._createDblClickHandler(type, elm, curCol)))
+					 // .append('<input type="text" disabled="disabled" value="' + elm.name + '" size="' + elm.name.length + '" />')
+					 // .append('<button class="fm-text-button" onclick="return false;">' + elm.name + '</button>')
+				.append('<td style="text-align: center;">-</td>')
+				.append('<td class="fm-col-emtime" title="' + elm.emtime + '">' + elm.emtime.substr(0, 11) + '</td>');
 		}
 		// файлы
 		else{
 			return $('<tr></tr>')
-				.append($('<td></td>')
-					.append($('<a class="fm-half-jlink" href="#"></a>')
-						 .click(FileManager._createClickHandler(type, elm, curCol))
-						 .dblclick(FileManager._createDblClickHandler(type, elm, curCol))
-						 .append('<img alt="f" src="data/images/file.png">')
-						 .append('<span>' + elm.name + '</span>')))
-				.append('<td style="text-align: right;">' + elm.size + '</td>');
+				.append('<td class="fm-col-icon"><img alt="f" src="data/images/file.png"></td>')
+				.append($('<td class="fm-col-name">' + elm.name + '</td>')
+					 .click(FileManager._createClickHandler(type, elm, curCol))
+					 .dblclick(FileManager._createDblClickHandler(type, elm, curCol)))
+				.append('<td style="text-align: right;">' + elm.size + '</td>')
+				.append('<td class="fm-col-emtime" title="' + elm.emtime + '">' + elm.emtime.substr(0, 11) + '</td>');
 		}
 	},
 	
@@ -124,14 +161,30 @@ var FileManager = {
 		// папки
 		if(type == 'dir'){
 			return this.fastMove
-				? function(){FileManager.cd(elm.name, col); return false;}
-				: function(){FileManager.select(type, elm, col, this); return false;};
+				// fast move
+				? function(e){
+					if(e.ctrlKey)
+						FileManager.select(type, elm, col, this, true);
+					else
+						FileManager.cd(elm.name, col);
+					return false;
+				}
+				// no fast move
+				: function(e){FileManager.select(type, elm, col, this, e.ctrlKey); return false;};
 		}
 		// файлы
 		else{
 			return this.fastMove
-				? function(){trace(type + ' ' + elm.name + ' ' + col); return false;}
-				: function(){FileManager.select(type, elm, col, this); return false;};
+				// fast move
+				? function(e){
+					if(e.ctrlKey)
+						FileManager.select(type, elm, col, this, true);
+					else
+						trace(type + ' ' + elm.name + ' ' + col);
+					return false;
+				}
+				// no fast move
+				: function(e){FileManager.select(type, elm, col, this, e.ctrlKey); return false;};
 		}
 	},
 	
@@ -149,51 +202,22 @@ var FileManager = {
 		}
 	},
 	
-	_bindKeyPress: function(){
-		
-		$(window).keypress(function(e){
-			
-			switch(e.keyCode){
-				case 113: // F2
-					trace("f2");
-					return false;
-				case 46: // DELETE
-					trace("delete");
-					break;
-			}
-		});
-	},
-	
-	_findHTML: function(){
-		this.html = {
-			left: {
-				addr: $('#fm-addr-left'),
-				col: $('#fm-left-col'),
-				tbody: $('#fm-left-col-tbody'),
-			},
-			right: {
-				addr: $('#fm-addr-right'),
-				col: $('#fm-right-col'),
-				tbody: $('#fm-right-col-tbody'),
-			}
-		}
-	},
-	
 	_formatPath: function(){
 		
 	},
+	
 	send: function(sendMsg){
 		XHR.open("POST", 'data/php/ajax.php');
 		XHR.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		XHR.send(sendMsg);
 		XHR.onreadystatechange = this.getResponse;
-		this.enableLoad();
+		this.showLoadIcon();
 	},
 		
 	getResponse: function(){
 		if(XHR.readyState != 4){return;}
 		
-		FileManager.disableLoad();
+		FileManager.hideLoadIcon();
 		FileManager.block = false;
 		
 		if(FileManager.act == 'fileTree'){
@@ -257,21 +281,22 @@ var FileManager = {
 		
 		if(this.block)
 			return;
-		this.block = true;
 		
 		if(!/[\/\\]$/.test(this.curDir[col]))
 			this.curDir[col] += '/';
 		this.curDir[col] += dir;
-		
+		this.activateCol(col);
 		this.displayFileTree([col]);
 	},
 	
 	jump: function(path, col){
-		if(this.block){return;}
-		this.block = true;
-		this.act = 'FileManager';
-		this.curCol = col;
-		this.send('act=showTree&curDir=' + encodeURIComponent(path));
+		
+		if(this.block)
+			return;
+		
+		this.curDir[col] = path;
+		this.activateCol(col);
+		this.displayFileTree([col]);
 	},
 	
 	load: function(path){
@@ -282,12 +307,11 @@ var FileManager = {
 	},
 	
 	reload: function(){
-		if(this.block){return;}
-		this.block = true;
-		this.act = 'FileManager';
-		this.mustReload = true;
-		this.curCol = 1;
-		this.send('act=showTree&curDir=' + encodeURI(this.curDirL));
+		
+		if(this.block)
+			return;
+			
+		this.displayFileTree(['left', 'right']);
 	},
 		
 	openFile: function(){
@@ -372,19 +396,27 @@ var FileManager = {
 		FileManager.send('act=mkfile&path=' + encodeURI(path) + '&name=' + encodeURI(name));
 	},
 
-	select: function(type, name, col, elm){
+	select: function(type, name, col, elm, append){
 		
-		if(this.block) return;
-		if(this.selected[col]) this.selected[col].htmlTr.removeClass('fm-select');
+		if(this.block)
+			return;
 		
-		this.selected[col] = {
-			name: name,
-			type: type,
-			html: $(elm),
-			htmlTr: $(elm).parent().parent()
-		};
-		this.selected[col].htmlTr.addClass('fm-select');
+		// если выделение не добавляется, очистить все предыдущие выбранные элементы
+		if(!append){
+			for(var i = this.selected[col].length - 1; i >= 0; i--)
+				this.selected[col][i].htmlTr.removeClass('fm-select');
+			this.selected[col] = [];
+		}
+		
+		var item = {
+			type: type, // тип (файл или папка)
+			name: name, // имя выделенного файла
+			html: $(elm), // jquery dom объект файла
+			htmlTr: $(elm).parent() // jquery dom объект tr-строки, содержащей выбранный файл
+		}
+		item.htmlTr.addClass('fm-select');
 		this.activateCol(col);
+		this.selected[col].push(item);
 	},
 		
 	unselect: function(){
@@ -407,15 +439,19 @@ var FileManager = {
 		this.html[col].col.addClass('fm-col-active');
 	},
 	
-	enableLoad: function(){
-		$('loadingImg').style.display = 'inline';
+	showLoadIcon: function(){
+		$('#load-icon').show();
 	},
 		
-	disableLoad: function(){
-		$('loadingImg').style.display = 'none';
+	hideLoadIcon: function(){
+		$('#load-icon').hide();
 	},
 		
 	fastMoveToggle: function(elm){
+		
+		if(this.block)
+			return;
+			
 		if(elm.checked == true){
 			this.fastMove = true;
 			this.log('Быстрая навигация включена');

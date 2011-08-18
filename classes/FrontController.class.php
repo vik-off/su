@@ -7,7 +7,6 @@ class FrontController extends Controller{
 	public $requestMethod = null;
 	public $requestParams = array();
 	
-	
 	public static function get(){
 		
 		if(is_null(self::$_instance))
@@ -144,6 +143,7 @@ class FrontController extends Controller{
 		$_SESSION = array();
 		redirect('');
 	}
+	
 	public function display_404(){
 		
 		if(AJAX_MODE){
@@ -187,6 +187,9 @@ class FrontController extends Controller{
 		$data = array('errcode' => 0, 'errmsg' => '', 'curDir' => realpath('.'), 'dirs' => array(), 'files' => array());
 		
 		$curDir = realpath(unescape(getVar($_GET['dir'])));
+		if(substr($curDir, -1) != DIRECTORY_SEPARATOR)
+			$curDir .= DIRECTORY_SEPARATOR;
+			
 		if(!is_dir($curDir)){
 			$data['errcode'] = 1;
 			$data['errmsg'] = 'Папка "'.$curDir.'" не найдена';
@@ -213,7 +216,7 @@ class FrontController extends Controller{
 				'perms' => substr(sprintf('%o', fileperms($fullName)), -3),
 				// 'owner' => $owner['name'],
 				'size' => $isDir ? '-' : sizeFormat(filesize($fullName)),
-				'emtime' => date('Y-m-d H:i:s', filemtime($fullName)),
+				'emtime' => strDate(filemtime($fullName)),
 			);
 		}
 		

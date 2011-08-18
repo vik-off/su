@@ -11,7 +11,7 @@
 	<script type="text/javascript">
 	
 		function href(href){
-			return 'index-new.php?r=' + href;
+			return 'index.php?r=' + href;
 		}
 
 		// расширения стандартного объекта Date
