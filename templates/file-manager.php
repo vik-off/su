@@ -35,7 +35,7 @@
 		<div>
 			<table id="fm-left-col" class="fm-col" border=0 align="left">
 				<thead>
-				<tr class="fm-col-header" onclick="FileManager.activateCol('left');">
+				<tr class="fm-col-header">
 					<th colspan="2">Имя</th>
 					<th>Размер</th>
 					<th title="дата последнего изменения">Дата изм.</th>
@@ -50,7 +50,7 @@
 		<div>
 			<table id="fm-right-col" class="fm-col" border=0 align="left">
 				<thead>
-				<tr class="fm-col-header" onclick="FileManager.activateCol('right');">
+				<tr class="fm-col-header">
 					<th colspan="2">Имя</th>
 					<th>Размер</th>
 					<th title="дата последнего изменения">Дата изм.</th>

@@ -1,6 +1,6 @@
 
 var FileManager = {
-	curCol: 0,   	// текущая столбец (для заполнения списком файлов)
+	curCol: null,   // текущая столбец (для заполнения списком файлов)
 	response: '',	// переменная, содержащая ответ сервера (как правило, объект)
 	act: false,		// текущее действие
 		
@@ -51,6 +51,7 @@ var FileManager = {
 		
 		$(window).keypress(function(e){
 			
+			// trace(e.keyCode);
 			switch(e.keyCode){
 				case 113: // F2
 					trace("f2");
@@ -58,11 +59,41 @@ var FileManager = {
 				case 46: // DELETE
 					trace("delete");
 					break;
+				case 27: // ESC
+					if(FileManager.curCol){
+						// если есть выделенные файлы - сбросить выделение
+						if(FileManager.selected[FileManager.curCol].length)
+							FileManager.unselect(FileManager.curCol);
+						// иначе деактивировать активную колонку
+						else
+							FileManager.activateCol(null);
+					}
+					break;
+			}
+		});
+		
+		$(document).click(function(e){
+			
+			// при щелчке вне коммандера, деактивируем обе вкладки
+			if(!$(e.target).parents('#fm-wrap').length){
+				FileManager.activateCol(null);
+				return;
 			}
 		});
 		
 		this.html.colBoxes.click(function(e){
 			
+			var col = $(this).hasClass('fm-left') ? 'left' : 'right';
+			
+			// щелчек по той же самой колонке
+			if(FileManager.curCol == col){
+				FileManager.unselect(col);
+			}
+			// щелчек по неактивной колонке активизирует ее
+			else{
+				FileManager.activateCol(col);
+			}
+			return;
 			var trg;
 			if(trg = $(e.target).hasClass('fm-col-box') || trg = $(e.target).parent().hasClass('fm-col-box')){
 				trace(trg);
@@ -104,6 +135,7 @@ var FileManager = {
 						return;
 					}
 					
+					// $('fm-status-bar').innerHTML = 'В директории <b><u>' + (this.curCol == 1 ? this.curDirL : this.curDirR) + '</u></b> свободно ' + this.response.freeSpace;
 					FileManager.html[col].tbody.empty();
 					FileManager.html[col].addr.val(response.curDir);
 					FileManager.selected[col] = [];
@@ -129,15 +161,18 @@ var FileManager = {
 	
 	_createUpItem: function(col){
 		return $('<tr></tr>')
-			.append('<td class="fm-col-icon"><img alt="f" src="data/images/up.png"></td>')
-			.append($('<td class="fm-col-name">..</td>')
+				.hover(
+					function(){$(this).addClass('fm-row-hover');},
+					function(){$(this).removeClass('fm-row-hover');})
 				.click(this.fastMove
 					? function(){FileManager.cd('..', col); return false;}
 					: function(){FileManager.select('..', '..', col, this); return false;})
 				.dblclick(this.fastMove
 					? function(){return false;}
 					: function(){FileManager.cd('..', col); return false;})
-			)
+			.append('<td class="fm-col-icon"><img alt="f" src="data/images/up.png"></td>')
+			.append($('<td class="fm-col-name">..</td>'))
+			.append('<td></td>')
 			.append('<td></td>');
 	},
 	
@@ -145,22 +180,28 @@ var FileManager = {
 		// папки
 		if(type == 'dir'){
 			return $('<tr></tr>')
+				.hover(
+					function(){$(this).addClass('fm-row-hover');},
+					function(){$(this).removeClass('fm-row-hover');})
+				.click(FileManager._createClickHandler(type, elm, curCol))
+				.dblclick(FileManager._createDblClickHandler(type, elm, curCol))
+				
 				.append('<td class="fm-col-icon"><img alt="d" src="data/images/fldr.png"></td>')
-				.append($('<td class="fm-col-name">' + elm.name + '</td>')
-					 .click(FileManager._createClickHandler(type, elm, curCol))
-					 .dblclick(FileManager._createDblClickHandler(type, elm, curCol)))
-					 // .append('<input type="text" disabled="disabled" value="' + elm.name + '" size="' + elm.name.length + '" />')
-					 // .append('<button class="fm-text-button" onclick="return false;">' + elm.name + '</button>')
+				.append($('<td class="fm-col-name">' + elm.name + '</td>'))
 				.append('<td style="text-align: center;">-</td>')
 				.append('<td class="fm-col-emtime" title="' + elm.emtime + '">' + elm.emtime.substr(0, 11) + '</td>');
 		}
 		// файлы
 		else{
 			return $('<tr></tr>')
+				.hover(
+					function(){$(this).addClass('fm-row-hover');},
+					function(){$(this).removeClass('fm-row-hover');})
+				.click(FileManager._createClickHandler(type, elm, curCol))
+				.dblclick(FileManager._createDblClickHandler(type, elm, curCol))
+				
 				.append('<td class="fm-col-icon"><img alt="f" src="data/images/file.png"></td>')
-				.append($('<td class="fm-col-name">' + elm.name + '</td>')
-					 .click(FileManager._createClickHandler(type, elm, curCol))
-					 .dblclick(FileManager._createDblClickHandler(type, elm, curCol)))
+				.append($('<td class="fm-col-name">' + elm.name + '</td>'))
 				.append('<td style="text-align: right;">' + elm.size + '</td>')
 				.append('<td class="fm-col-emtime" title="' + elm.emtime + '">' + elm.emtime.substr(0, 11) + '</td>');
 		}
@@ -420,29 +461,39 @@ var FileManager = {
 		
 		// если выделение не добавляется, очистить все предыдущие выбранные элементы
 		if(!append){
-			for(var i = this.selected[col].length - 1; i >= 0; i--)
-				this.selected[col][i].htmlTr.removeClass('fm-select');
-			this.selected[col] = [];
+			this.unselect(col);
+		}
+		
+		// если файл должен быть добавлен в выделение, и при этом уже выделен,
+		// тогда снимем выделение
+		if(append){
+			for(var i = this.selected[col].length - 1; i >= 0; i--){
+				if(this.selected[col][i].name == name){
+					this.selected[col][i].html.removeClass('fm-select');
+					this.selected[col].splice(i, 1);
+					return;
+				}
+			}
 		}
 		
 		var item = {
 			type: type, // тип (файл или папка)
 			name: name, // имя выделенного файла
-			html: $(elm), // jquery dom объект файла
-			htmlTr: $(elm).parent() // jquery dom объект tr-строки, содержащей выбранный файл
+			html: $(elm), // jquery dom объект tr-строки
 		}
-		item.htmlTr.addClass('fm-select');
+		item.html.addClass('fm-select');
 		this.selected[col].push(item);
 		this.activateCol(col);
 	},
+	
+	unselect: function(col){
 		
-	unselect: function(){
-		if(this.block){return;}
-		if(this.selected){this.selected.parentNode.parentNode.className = 'fm-unselect';}
-		this.selected = false;
-		this.target = false;
-		this.col = false;
-		this.type = false;
+		if(this.block)
+			return;
+			
+		for(var i = this.selected[col].length - 1; i >= 0; i--)
+			this.selected[col][i].html.removeClass('fm-select');
+		this.selected[col] = [];
 	},
 	
 	activateCol: function(col){
@@ -453,7 +504,8 @@ var FileManager = {
 		this.curCol = col;
 		this.html.left.col.removeClass('fm-col-active');
 		this.html.right.col.removeClass('fm-col-active');
-		this.html[col].col.addClass('fm-col-active');
+		if(col)
+			this.html[col].col.addClass('fm-col-active');
 	},
 	
 	showLoadIcon: function(){
@@ -493,71 +545,4 @@ var FileManager = {
 			.append('<span>' + text + '</span>')
 			.appendTo('#fm-log-body');
 	},
-
-	showList: function(){
-		var tb, tr, td1, td2;
-		var imgDir = '';
-		var imgFile = '';
-		if(this.curCol == 1){tb = $('fm-left-col').lastChild;}
-		else if(this.curCol == 2){tb = $('fm-right-col').lastChild;}
-		else{this.curCol = 1; this.showList(); this.curCol = 2; this.showList(); return;}
-		
-		/**** очистка ****/
-		while(tb.childNodes.length > 1){tb.removeChild(tb.lastChild);}
-		this.unselect();
-		
-		if(this.fastMove){
-			$('fm-left-col-up').onclick = function(){FileManager.cd("..", 1); return false;}
-			$('fm-left-col-up').ondblclick = function(){return false;}
-			$('fm-right-col-up').onclick = function(){FileManager.cd("..", 2); return false;}
-			$('fm-right-col-up').ondblclick = function(){return false;}
-		}else{
-			$('fm-left-col-up').onclick = function(){FileManager.select(this, 1); return false;}
-			$('fm-left-col-up').ondblclick = function(){FileManager.cd("..", 1);return false;}
-			$('fm-right-col-up').onclick = function(){FileManager.select(this, 2); return false;}
-			$('fm-right-col-up').ondblclick = function(){FileManager.cd("..", 2);return false;}
-		}
-		
-		/**** заполнение папок ****/
-		for(var i = 0; i < this.response.dirs.length; i++){
-			curElm = this.response.dirs[i];
-			tr = document.createElement("TR");
-			td1 = document.createElement("TD");
-			td2 = document.createElement("TD");
-			
-			tr.className = 'fm-unselect';
-			
-			if(this.fastMove){td1.innerHTML = "<a class='fm-half-jlink' href='#' onClick='FileManager.cd(\"" + curElm[0] + "\", " + this.curCol + ");return false;' onDblClick='return false;'><img alt='d' src='data/images/fldr.png'>" + curElm[0] + "</a>";}
-			else{td1.innerHTML = "<a class='fm-jlink' href='#' onClick='FileManager.select(this, " + this.curCol + ", 1); return false;' onDblClick='FileManager.cd(\"" + curElm[0] + "\", " + this.curCol + "); return false;'><img alt='d' src='data/images/fldr.png'>" + curElm[0] + "</a>";}
-
-			tr.appendChild(td1);
-			tr.appendChild(td2);
-			tb.appendChild(tr);
-		}
-		/**** заполнение файлов ****/
-		for(var i = 0; i < this.response.files.length; i++){
-			curElm = this.response.files[i];
-			tr = document.createElement("TR");
-			td1 = document.createElement("TD");
-			td2 = document.createElement("TD");
-
-			tr.className = 'fm-unselect';
-
-			if(this.fastMove){td1.innerHTML = "<a class='fm-half-jlink' href='#' onClick='' onDblClick=''><img alt='f' src='data/images/file.png'>" + curElm[0] + "</a>";}
-			else{td1.innerHTML = "<a class='fm-jlink' href='#' onClick='FileManager.select(this, " + this.curCol + ", 2); return false;' onDblClick='FileManager.openFile(); return false;'><img alt='f' src='data/images/file.png'>" + curElm[0] + "</a>";}
-
-			td2.innerHTML = curElm[1];
-			td2.style.textAlign = 'right';	
-			tr.appendChild(td1);
-			tr.appendChild(td2);
-			tb.appendChild(tr);
-		}
-		
-		/**** заполнение поля адреса ****/
-		if(this.curCol == 1){$('addr-left').value = this.curDirL;}
-		else if(this.curCol == 2){$('addr-right').value = this.curDirR;}
-		
-		/**** заполнение строки состояния ****/
-		$('fm-status-bar').innerHTML = 'В директории <b><u>' + (this.curCol == 1 ? this.curDirL : this.curDirR) + '</u></b> свободно ' + this.response.freeSpace;
-	}
 }

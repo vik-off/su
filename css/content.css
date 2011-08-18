@@ -159,15 +159,18 @@ a.fm-opt-icon:active{
 	cursor: pointer;
 	white-space: nowrap;
 }
-.fm-col>tbody td{
-	padding: 2px 5px;
-}
 .fm-col.fm-col-active>thead th{
 	background-color:#93C9FF;
 	color:#000000;
 	padding:2px 10px;
 	border:solid 1px #FFFFFF;
 	cursor: default;
+}
+.fm-col>tbody tr.fm-row-hover{
+	background-color: #FFFFE2;
+}
+.fm-col>tbody td{
+	padding: 2px 5px;
 }
 td.fm-col-icon{
 	width: 18px;
