@@ -41,40 +41,39 @@ var FileManager = {
 		this._findHTML();
 		
 		this.curDir.left = this.curDir.right = path;
-		this.displayFileTree();
+		this.activateCol('left');
+		this.displayFileTree(['left', 'right']);
 	},
 	
-	displayFileTree: function(){
-		
-		var cols = [];
-		var curCol, elm;
-		if(this.curCol == 'left') cols.push('left');
-		else if(this.curCol == 'right') cols.push('right');
-		else cols.push('left', 'right');
+	displayFileTree: function(cols){
 		
 		for(var ci = 0; ci < cols.length; ci++){
-			(function(curCol){
-				$.get(href('fm-get-tree'), {dir: FileManager.curDir[curCol]}, function(response){
+			(function(col, ci, ct){
+				$.get(href('fm-get-tree'), {dir: FileManager.curDir[col]}, function(response){
 					
 					if(response.errcode){
+						FileManager.block = false;
 						trace(response.errmsg);
 						return;
 					}
 					
-					FileManager.activateCol(curCol);
-					FileManager.html[curCol].tbody.empty();
-					FileManager.html[curCol].addr.val(response.curDir);
-					FileManager.selected[curCol] = null;
+					FileManager.html[col].tbody.empty();
+					FileManager.html[col].addr.val(response.curDir);
+					FileManager.selected[col] = null;
 					
 					// var_dump(response, 'a');
-					FileManager.html[curCol].tbody.append(FileManager._createUpItem(curCol));
+					FileManager.html[col].tbody.append(FileManager._createUpItem(col));
 					for(var i = 0; i < response.dirs.length; i++)
-						FileManager.html[curCol].tbody.append(FileManager._createTreeItem('dir', response.dirs[i], curCol));
+						FileManager.html[col].tbody.append(FileManager._createTreeItem('dir', response.dirs[i], col));
 						
 					for(var i = 0; i < response.files.length; i++)
-						FileManager.html[curCol].tbody.append(FileManager._createTreeItem('file', response.files[i], curCol));
+						FileManager.html[col].tbody.append(FileManager._createTreeItem('file', response.files[i], col));
+					
+					if(ci == ct)
+						FileManager.block = false;
+						
 				}, 'json');
-			})(cols[ci]);
+			})(cols[ci], ci, cols.length - 1);
 		}
 	},
 	
@@ -83,11 +82,11 @@ var FileManager = {
 			.append($('<td></td>')
 				.append($('<a class="fm-jlink" href="#"></a>')
 					.click(this.fastMove
-						? function(){return false;}
+						? function(){FileManager.cd('..', col); return false;}
 						: function(){FileManager.select('..', '..', col, this); return false;})
 					.dblclick(this.fastMove
 						? function(){return false;}
-						: function(){return false;})
+						: function(){FileManager.cd('..', col); return false;})
 					.append('<img alt="up" align="middle" src="data/images/up.png">')
 					.append('<span>..</span>')))
 			.append('<td></td>');
@@ -102,8 +101,11 @@ var FileManager = {
 						 .click(FileManager._createClickHandler(type, elm, curCol))
 						 .dblclick(FileManager._createDblClickHandler(type, elm, curCol))
 						 .append('<img alt="d" src="data/images/fldr.png">')
-						 .append('<span>' + elm.name + '</span>')))
-				.append('<td>-</td>');
+						 .append('<span>' + elm.name + '</span>')
+						 // .append('<input type="text" disabled="disabled" value="' + elm.name + '" size="' + elm.name.length + '" />')
+						 // .append('<button class="fm-text-button" onclick="return false;">' + elm.name + '</button>')
+						 ))
+				.append('<td style="text-align: center;">-</td>');
 		}
 		// файлы
 		else{
@@ -114,7 +116,7 @@ var FileManager = {
 						 .dblclick(FileManager._createDblClickHandler(type, elm, curCol))
 						 .append('<img alt="f" src="data/images/file.png">')
 						 .append('<span>' + elm.name + '</span>')))
-				.append('<td>' + elm.size + '</td>');
+				.append('<td style="text-align: right;">' + elm.size + '</td>');
 		}
 	},
 	
@@ -122,28 +124,28 @@ var FileManager = {
 		// папки
 		if(type == 'dir'){
 			return this.fastMove
-				? function(){FileManager.cd(elm.name, col); trace(this + ' ' + type + ' ' + elm.name + ' ' + col); return false;}
+				? function(){FileManager.cd(elm.name, col); return false;}
 				: function(){FileManager.select(type, elm, col, this); return false;};
 		}
 		// файлы
 		else{
 			return this.fastMove
-				? function(){trace(type + ' ' + elm.name + ' ' + curCol); return false;}
-				: function(){FileManager.select(type, elm, curCol, this); return false;};
+				? function(){trace(type + ' ' + elm.name + ' ' + col); return false;}
+				: function(){FileManager.select(type, elm, col, this); return false;};
 		}
 	},
 	
-	_createDblClickHandler: function(type, elm, curCol){
+	_createDblClickHandler: function(type, elm, col){
 		if(type == 'dir'){
 			return this.fastMove
-				? function(){trace(type + ' ' + elm.name + ' ' + curCol); return false;}
-				: function(){trace(type + ' ' + elm.name + ' ' + curCol); return false;};
+				? function(){return false;}
+				: function(e){FileManager.cd(elm.name, col); return false;};
 		}
 		// файлы
 		else{
 			return this.fastMove
-				? function(){trace(type + ' ' + elm.name + ' ' + curCol); return false;}
-				: function(){trace(type + ' ' + elm.name + ' ' + curCol); return false;};
+				? function(){trace(type + ' ' + elm.name + ' ' + col); return false;}
+				: function(){trace(type + ' ' + elm.name + ' ' + col); return false;};
 		}
 	},
 	
@@ -251,11 +253,17 @@ var FileManager = {
 		}
 	},
 	
-	cd: function(dirname, col){
-		if(this.block) return;
+	cd: function(dir, col){
+		
+		if(this.block)
+			return;
 		this.block = true;
-		this.curDir[col] = this.curDir[col]
-		this.displayFileTree();
+		
+		if(!/[\/\\]$/.test(this.curDir[col]))
+			this.curDir[col] += '/';
+		this.curDir[col] += dir;
+		
+		this.displayFileTree([col]);
 	},
 	
 	jump: function(path, col){
@@ -390,18 +398,13 @@ var FileManager = {
 	
 	activateCol: function(col){
 		
-		if(this.curCol == col) return;
+		if(this.curCol == col)
+			return;
 		
 		this.curCol = col;
 		this.html.left.col.removeClass('fm-col-active');
 		this.html.right.col.removeClass('fm-col-active');
 		this.html[col].col.addClass('fm-col-active');
-	},
-	activeCol: function(col){
-		if(col == 1){col = 'fm-left-col'}else if(col == 2){col = 'fm-right-col'}else{col = false;}	//параметр 'col' поступает в виде '1', '2' или ''
-		if(this.activeColVal){$(this.activeColVal).firstChild.firstChild.className = 'fm-col-inactive';}	//если столбец был выделен, делает его пассивным
-		this.activeColVal = col;
-		if(this.activeColVal){$(this.activeColVal).firstChild.firstChild.className = 'fm-col-active';}	//если выбран новый столбец, делает его активным
 	},
 	
 	enableLoad: function(){
@@ -413,9 +416,14 @@ var FileManager = {
 	},
 		
 	fastMoveToggle: function(elm){
-		if(elm.checked == true){this.fastMove = true; this.log('Быстрая навигация включена');}
-		else{this.fastMove = false; this.log('Быстрая навигация отключена');}
-		this.reload();
+		if(elm.checked == true){
+			this.fastMove = true;
+			this.log('Быстрая навигация включена');
+		}else{
+			this.fastMove = false;
+			this.log('Быстрая навигация отключена');
+		}
+		this.displayFileTree(['left', 'right']);
 	},
 	
 	/**
