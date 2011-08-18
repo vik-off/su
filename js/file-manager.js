@@ -16,7 +16,7 @@ var FileManager = {
 	activeColVal: false,	//активный столбец (заголовок выделен синим)
 	html: {
 		btnFastMove: null,
-		colBoxex: null,
+		colBoxes: null,
 		left: {
 			addr: null,
 			col: null,
@@ -39,8 +39,8 @@ var FileManager = {
 	
 	init: function(path){
 		
-		this._bindEvents();
 		this._findHTML();
+		this._bindEvents();
 		
 		this.curDir.left = this.curDir.right = path;
 		this.activateCol('left');
@@ -60,12 +60,21 @@ var FileManager = {
 					break;
 			}
 		});
+		
+		this.html.colBoxes.click(function(e){
+			
+			var trg;
+			if(trg = $(e.target).hasClass('fm-col-box') || trg = $(e.target).parent().hasClass('fm-col-box')){
+				trace(trg);
+			}
+			trace(e.target.className);
+		});
 	},
 	
 	_findHTML: function(){
 		this.html = {
 			btnFastMove: $('#btn-fast-mode'),
-			colBoxex: $('.fm-col-box'),
+			colBoxes: $('.fm-col-box'),
 			left: {
 				addr: $('#fm-addr-left'),
 				col: $('#fm-left-col'),
@@ -97,7 +106,7 @@ var FileManager = {
 					
 					FileManager.html[col].tbody.empty();
 					FileManager.html[col].addr.val(response.curDir);
-					FileManager.selected[col] = null;
+					FileManager.selected[col] = [];
 					
 					var_dump(response, 'o=c/files a');
 					FileManager.html[col].tbody.append(FileManager._createUpItem(col));
@@ -167,10 +176,15 @@ var FileManager = {
 						FileManager.select(type, elm, col, this, true);
 					else
 						FileManager.cd(elm.name, col);
+					e.stopPropagation();
 					return false;
 				}
 				// no fast move
-				: function(e){FileManager.select(type, elm, col, this, e.ctrlKey); return false;};
+				: function(e){
+					FileManager.select(type, elm, col, this, e.ctrlKey);
+					e.stopPropagation();
+					return false;
+				};
 		}
 		// файлы
 		else{
@@ -184,7 +198,10 @@ var FileManager = {
 					return false;
 				}
 				// no fast move
-				: function(e){FileManager.select(type, elm, col, this, e.ctrlKey); return false;};
+				: function(e){
+					FileManager.select(type, elm, col, this, e.ctrlKey);
+					return false;
+				};
 		}
 	},
 	
@@ -415,8 +432,8 @@ var FileManager = {
 			htmlTr: $(elm).parent() // jquery dom объект tr-строки, содержащей выбранный файл
 		}
 		item.htmlTr.addClass('fm-select');
-		this.activateCol(col);
 		this.selected[col].push(item);
+		this.activateCol(col);
 	},
 		
 	unselect: function(){

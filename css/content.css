@@ -142,7 +142,7 @@ a.fm-opt-icon:active{
 }
 
 .fm-col-box{
-	padding:5px;
+	padding:5px 10px;
 	border:solid 1px #999999;
 	background-color:#FFFFFF;
 }

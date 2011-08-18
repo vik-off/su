@@ -31,11 +31,11 @@
 	<td><input id="fm-addr-right" type="text" onKeyPress="if(event.keyCode == 13){FileManager.jump(this.value, 'right');}"></td>
 </tr>
 <tr valign="top">
-	<td class="fm-col-box">
+	<td class="fm-col-box fm-left">
 		<div>
 			<table id="fm-left-col" class="fm-col" border=0 align="left">
 				<thead>
-				<tr onclick="FileManager.activateCol('left');">
+				<tr class="fm-col-header" onclick="FileManager.activateCol('left');">
 					<th colspan="2">Имя</th>
 					<th>Размер</th>
 					<th title="дата последнего изменения">Дата изм.</th>
@@ -46,11 +46,11 @@
 		</div>
 	</td>
 	<td></td>
-	<td class="fm-col-box">
+	<td class="fm-col-box fm-right">
 		<div>
 			<table id="fm-right-col" class="fm-col" border=0 align="left">
 				<thead>
-				<tr onclick="FileManager.activateCol('right');">
+				<tr class="fm-col-header" onclick="FileManager.activateCol('right');">
 					<th colspan="2">Имя</th>
 					<th>Размер</th>
 					<th title="дата последнего изменения">Дата изм.</th>
