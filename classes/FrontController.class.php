@@ -66,7 +66,7 @@ class FrontController extends Controller{
 		$method = $this->getDisplayMethodName($this->requestMethod);
 		
 		if(!method_exists($this, $method))
-			$this->display_404();
+			$this->display_404($method);
 		
 		$this->$method($this->requestParams);
 	}
@@ -144,18 +144,59 @@ class FrontController extends Controller{
 		redirect('');
 	}
 	
-	public function display_404(){
+	public function display_404($method){
 		
 		if(AJAX_MODE){
-			echo 'Страница не найдена';
+			echo 'Страница не найдена ('.$method.')';
 		}else{
 			Layout::get()
-				->setContent('<h1 style="text-align: center;">Страница не найдена</h1>')
+				->setContent('<h1 style="text-align: center;">Страница не найдена</h1> ('.$method.')')
 				->render();
 		}
 		exit;
 	}
 	
+	public function display_fm_openfile(){
+		
+		$file = getVar($_GET['f']);
+		if(!file_exists($file))
+			exit('Файл '.$file.' не найден.');
+		if(!is_readable($file))
+			exit('Невозможно прочитать файл '.$file.'. Нет прав на чтение.');
+		
+		header('Content-type: text/plain');
+		readfile($file);
+		exit;
+	}
+	
+	public function display_fm_editfile(){
+		
+		$filename = getVar($_GET['f']);
+		if(!file_exists($filename))
+			exit('Файл '.$filename.' не найден.');
+		if(!is_readable($filename))
+			exit('Невозможно прочитать файл '.$filename.'. Нет прав на чтение.');
+			
+		$filecontent = file_get_contents($filename);
+		include(FS_ROOT.'templates/fm-editfile.php');
+	}
+	
+	public function display_fm_download(){
+		
+		$file = getVar($_GET['f']);
+		if(!file_exists($file))
+			exit('Файл '.$file.' не найден.');
+		if(!is_readable($file))
+			exit('Невозможно прочитать файл '.$file.'. Нет прав на чтение.');
+		
+		header('Expires: 0');
+		header('Cache-Control: private');
+		header('Pragma: cache');
+		header('Content-type: application/download');
+		header('Content-Disposition: attachment; filename='.basename($file));
+		readfile($file);
+		exit;
+	}
 
 	////////////////////
 	////// ACTION //////

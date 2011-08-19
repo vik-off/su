@@ -167,7 +167,8 @@ a.fm-opt-icon:active{
 	cursor: default;
 }
 .fm-col>tbody tr.fm-row-hover{
-	background-color: #FFFFE2;
+	/* background-color: #FFFFE2; */
+	background-color: #E7F3FF;
 }
 .fm-col>tbody td{
 	padding: 2px 5px;
@@ -260,9 +261,33 @@ a.fm-half-jlink::selection{
 	display:inline-block;
 	color:#777777;
 }
-
-
-	
+.fm-context-menu{
+	position: absolute;
+	padding: 5px 0;
+	border: 1px solid #61ABFF;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-khtml-border-radius: 10px;
+	background: #FFF;
+	font-size: 11px;
+	color: #333;
+	z-index: 9999;
+	text-align: center;
+}
+.fm-context-menu-text{
+	padding: 0 7px 1px;
+}
+a.fm-context-menu-opt{
+	display: block;
+	padding: 1px 10px;
+	font-size: 11px;
+	cursor: pointer;
+}
+a.fm-context-menu-opt:hover{
+	text-decoration: none;
+	background-color: #E7F3FF;
+}
 
 
 

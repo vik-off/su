@@ -38,11 +38,9 @@ hr{
 a{
 	color:#505AB4;
 	text-decoration: none;
-	font-weight:bold;
 }
 a:hover{
 	color:#1EC3FE;
-	font-weight:bold;
 	text-decoration:underline;
 }
 
