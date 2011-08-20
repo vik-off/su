@@ -1,25 +1,11 @@
-Array
-(
-    [dirs] => Array
-        (
-            [0] => .svn
-            [1] => data
-            [2] => DBbackup
-            [3] => su-min
-            [4] => uploads
-        )
+asdfasd
+asdf
+	asdf
 
-    [files] => Array
-        (
-            [0] => fileManager.php
-            [1] => fileManagerAJAX.php
-            [2] => fileUpload.php
-            [3] => globals.php
-            [4] => index.php
-            [5] => public.php
-            [6] => setup.php
-            [7] => socketBrowser.php
-            [8] => sqlManager.php
-        )
+Привет как дела?
 
-)
+Ghbdtn					как дела
+
+	работает 		
+	фыва
+фыва	фыва

@@ -33,6 +33,10 @@ class FrontController extends Controller{
 	}
 	
 	public function ajax(){
+		
+		if($this->_checkAction())
+			exit;
+			
 		$this->_checkAjax();
 	}
 	
@@ -53,12 +57,16 @@ class FrontController extends Controller{
 			$method = $this->getActionMethodName($action);
 			
 			if(!method_exists($this, $method))
-				$this->display_404();
+				$this->display_404($method);
 				
 			if($this->$method())
 				if(!empty($_POST['redirect']))
 					redirect($_POST['redirect']);
+			
+			return TRUE;
 		}
+		
+		return FALSE;
 	}
 	
 	private function _checkDisplay(){
@@ -76,7 +84,7 @@ class FrontController extends Controller{
 		$method = $this->getAjaxMethodName($this->requestMethod);
 		
 		if(!method_exists($this, $method))
-			$this->display_404();
+			$this->display_404($method);
 		
 		$this->$method($this->requestParams);
 	}
@@ -144,7 +152,7 @@ class FrontController extends Controller{
 		redirect('');
 	}
 	
-	public function display_404($method){
+	public function display_404($method = ''){
 		
 		if(AJAX_MODE){
 			echo 'Страница не найдена ('.$method.')';
@@ -216,6 +224,22 @@ class FrontController extends Controller{
 		
 		$_SESSION['su']['logged'] = 0;
 		reload();
+	}
+	
+	public function action_fm_save_file(){
+		
+		$fileName = unescape(getVar($_POST['file-name']));
+		$fileContent = unescape(getVar($_POST['file-content']));
+		
+		if(!file_exists($fileName))
+			exit('Файл '.$fileName.' не найден.');
+		if(!is_writeable($fileName))
+			exit('Невозможно сохранить файл '.$fileName.'. Нет прав на запись.');
+		if(preg_match('/^\s*$/', $fileContent) && empty($_POST['allowEmpty']))
+			exit('Попытка сохранить пустой файл без разрешения');
+		
+		file_put_contents($fileName, $fileContent);
+		echo 'ok';
 	}
 	
 

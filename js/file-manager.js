@@ -42,32 +42,36 @@ var FileManager = {
 		this._findHTML();
 		this._bindEvents();
 		
-		this.curDir.left = this.curDir.right = path;
+		if(!this._parseHash(path));
+		
 		this.activateCol('left');
 		this.displayFileTree(['left', 'right']);
 	},
-	
 	_bindEvents: function(){
 		
 		$(window).keypress(function(e){
 			
-			// return false;
 			// trace(e.keyCode);
+			// return false;
 			switch(e.keyCode){
+				case 36: // HOME
+					if(FileManager.curCol){
+						FileManager.shortcuts.home();
+						return false;
+					}
+					break;
+				case 35: // END
+					if(FileManager.curCol){
+						FileManager.shortcuts.end();
+						return false;
+					}
+					break;
+				case 9: // TAB
+					return FileManager.shortcuts.tab();
 				case 97: // A
 					// ctrl + A - выделить все
 					if(e.ctrlKey && FileManager.curCol){
-						FileManager.unselect(FileManager.curCol);
-						FileManager.html[FileManager.curCol].tbody.children().each(function(){
-							var t = $(this);
-							var type = null;
-							if(t.hasClass('fm-row-dir'))
-								type = 'dir';
-							if(t.hasClass('fm-row-file'))
-								type = 'file';
-							if(type)
-								FileManager.select(type, t.children('.fm-col-name').text(), FileManager.curCol, this, true);
-						});
+						FileManager.shortcuts.selectAll();
 						return false;
 					}
 					break;
@@ -78,14 +82,7 @@ var FileManager = {
 					trace("delete");
 					break;
 				case 27: // ESC
-					if(FileManager.curCol){
-						// если есть выделенные файлы - сбросить выделение
-						if(FileManager.selected[FileManager.curCol].length)
-							FileManager.unselect(FileManager.curCol);
-						// иначе деактивировать активную колонку
-						else
-							FileManager.activateCol(null);
-					}
+					FileManager.shortcuts.esc();
 					break;
 			}
 		});
@@ -116,6 +113,61 @@ var FileManager = {
 		});
 	},
 	
+	shortcuts: {
+		selectAll: function(e){
+			FileManager.unselect(FileManager.curCol);
+			FileManager.html[FileManager.curCol].tbody.children().each(function(){
+				var t = $(this);
+				var type = null;
+				if(t.hasClass('fm-row-dir'))
+					type = 'dir';
+				if(t.hasClass('fm-row-file'))
+					type = 'file';
+				if(type)
+					FileManager.select(type, t.children('.fm-col-name').text(), FileManager.curCol, this, true);
+			});
+		},
+		
+		esc: function(){
+			if(FileManager.curCol){
+				// если есть выделенные файлы - сбросить выделение
+				if(FileManager.selected[FileManager.curCol].length)
+					FileManager.unselect(FileManager.curCol);
+				// иначе деактивировать активную колонку
+				else
+					FileManager.activateCol(null);
+			}
+		},
+		
+		home: function(){
+			FileManager.unselect(FileManager.curCol);
+			var item = FileManager.html[FileManager.curCol].tbody.children().first();
+			FileManager.select(item.data('type'), item.data('name'), FileManager.curCol, item);
+			
+			FileManager.html[FileManager.curCol].tbody.parent().parent().scrollTop(0);
+		},
+		
+		end: function(){
+			FileManager.unselect(FileManager.curCol);
+			var item = FileManager.html[FileManager.curCol].tbody.children().last();
+			FileManager.select(item.data('type'), item.data('name'), FileManager.curCol, item);
+			
+			FileManager.html[FileManager.curCol].tbody.parent().parent().scrollTop(
+				FileManager.html[FileManager.curCol].tbody.parent().height()
+			);
+		},
+		
+		tab: function(){
+			
+			if(FileManager.curCol == 'left')
+				FileManager.activateCol('right');
+			else
+				FileManager.activateCol('left');
+				
+			return true;
+		},
+	},
+	
 	_findHTML: function(){
 		this.html = {
 			btnFastMove: $('#btn-fast-mode'),
@@ -133,6 +185,32 @@ var FileManager = {
 		}
 	},
 	
+	_parseHash: function(path){
+		var hash = location.hash;
+		if(hash.length < 2)
+			return false;
+		
+		hash = hash.substr(1);
+		var pair;
+		var _GET = {};
+		var pairs = hash.split('&');
+		for(var i in pairs){
+			pair = pairs[i].split('=');
+			_GET[pair[0]] = pair[1] || '';
+		}
+		
+		this.curDir.left = _GET['ldir'] || path;
+		this.curDir.right = _GET['rdir'] || path;
+		
+		return true;
+	},
+	
+	updateHash: function(){
+		location.hash = '#'
+			+ 'ldir=' + this.curDir.left
+			+ '&rdir=' + this.curDir.right;
+	},
+	
 	displayFileTree: function(cols){
 		
 		this.block = true;
@@ -144,6 +222,7 @@ var FileManager = {
 					
 					if(response.errcode){
 						FileManager.block = false;
+						FileManager.updateHash();
 						FileManager.hideLoadIcon();
 						trace(response.errmsg);
 						return;
@@ -151,11 +230,12 @@ var FileManager = {
 					
 					// $('fm-status-bar').innerHTML = 'В директории <b><u>' + (this.curCol == 1 ? this.curDirL : this.curDirR) + '</u></b> свободно ' + this.response.freeSpace;
 					FileManager.html[col].tbody.empty();
+					FileManager.curDir[col] = response.curDir;
 					FileManager.html[col].addr.val(response.curDir);
 					FileManager.selected[col] = [];
 					
-					var_dump(response, 'o=c/files a');
-					FileManager.html[col].tbody.append(FileManager._createUpItem(col));
+					// var_dump(response, 'o=c/files a');
+					FileManager.html[col].tbody.append(FileManager._createUpItem(col, response.curDir));
 					for(var i = 0; i < response.dirs.length; i++)
 						FileManager.html[col].tbody.append(FileManager._createTreeItem('dir', response.dirs[i], col, response.curDir));
 						
@@ -174,6 +254,7 @@ var FileManager = {
 					// последняя итерация
 					if(ci == ct){
 						FileManager.block = false;
+						FileManager.updateHash();
 						FileManager.hideLoadIcon();
 					}
 						
@@ -182,8 +263,11 @@ var FileManager = {
 		}
 	},
 	
-	_createUpItem: function(col){
+	_createUpItem: function(col, path){
 		return $('<tr class="fm-row-up"></tr>')
+				.data('type', 'up')
+				.data('path', path)
+				.data('name', '..')
 				.hover(
 					function(){$(this).addClass('fm-row-hover');},
 					function(){$(this).removeClass('fm-row-hover');})
@@ -203,7 +287,9 @@ var FileManager = {
 		// папки
 		if(type == 'dir'){
 			return $('<tr class="fm-row-dir"></tr>')
+				.data('type', type)
 				.data('path', path)
+				.data('name', elm.name)
 				.hover(
 					function(){$(this).addClass('fm-row-hover');},
 					function(){$(this).removeClass('fm-row-hover');})
@@ -218,7 +304,9 @@ var FileManager = {
 		// файлы
 		else{
 			return $('<tr class="fm-row-file"></tr>')
+				.data('type', type)
 				.data('path', path)
+				.data('name', elm.name)
 				.hover(
 					function(){$(this).addClass('fm-row-hover');},
 					function(){$(this).removeClass('fm-row-hover');})
