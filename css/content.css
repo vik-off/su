@@ -136,7 +136,7 @@ a.fm-opt-icon:active{
 	border:inset 1px #CCCCCC;
 }
 #fm-addr-left, #fm-addr-right{
-	width:350px;
+	width:98%;
 	font-family:"Arial";
 	margin-bottom:5px;
 }
@@ -225,9 +225,10 @@ a.fm-half-jlink::selection{
 .fm-col.fm-col-active tr.fm-select *{
 	background-color:#508EF5 !important;
 	color:white !important;
+}
+.fm-col.fm-col-active tr.fm-select .fm-col-name{
 	font-weight:bold !important;
 }
-
 #fm-left-col ,#fm-right-col{
 }
 #fm-left-col td ,#fm-right-col td{

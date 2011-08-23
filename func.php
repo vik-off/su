@@ -100,4 +100,10 @@ function strDate($timestamp = null){
 	return date('d ', $timestamp).$months[date('m', $timestamp) - 1].date(' Y H:i:s', $timestamp);
 }
 
-	
+function ansi2utf($str){
+	return function_exists('iconv') ? iconv('windows-1251','UTF-8', $str) : $str;
+}
+
+function utf2ansi($str){
+	return function_exists('iconv') ? iconv('UTF-8','windows-1251', $str) : $str;
+}

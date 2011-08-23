@@ -166,20 +166,23 @@ class FrontController extends Controller{
 	
 	public function display_fm_openfile(){
 		
-		$file = getVar($_GET['f']);
-		if(!file_exists($file))
-			exit('Файл '.$file.' не найден.');
-		if(!is_readable($file))
-			exit('Невозможно прочитать файл '.$file.'. Нет прав на чтение.');
+		$_filename = getVar($_GET['f']);
+		$filename = WIN_SERVER ? utf2ansi($_filename) : $_filename;
+		if(!file_exists($filename))
+			exit('Файл '.$filename.' не найден.');
+		if(!is_readable($filename))
+			exit('Невозможно прочитать файл '.$filename.'. Нет прав на чтение.');
 		
 		header('Content-type: text/plain');
-		readfile($file);
+		header('Content-Disposition: inline; filename='.basename($filename));
+		readfile($filename);
 		exit;
 	}
 	
 	public function display_fm_editfile(){
 		
-		$filename = getVar($_GET['f']);
+		$_filename = getVar($_GET['f']);
+		$filename = WIN_SERVER ? utf2ansi($_filename) : $_filename;
 		if(!file_exists($filename))
 			exit('Файл '.$filename.' не найден.');
 		if(!is_readable($filename))
@@ -191,18 +194,20 @@ class FrontController extends Controller{
 	
 	public function display_fm_download(){
 		
-		$file = getVar($_GET['f']);
-		if(!file_exists($file))
-			exit('Файл '.$file.' не найден.');
-		if(!is_readable($file))
-			exit('Невозможно прочитать файл '.$file.'. Нет прав на чтение.');
+		$_filename = getVar($_GET['f']);
+		$filename = WIN_SERVER ? utf2ansi($_filename) : $_filename;
+		if(!file_exists($filename))
+			exit('Файл '.$filename.' не найден.');
+		if(!is_readable($filename))
+			exit('Невозможно прочитать файл '.$filename.'. Нет прав на чтение.');
 		
 		header('Expires: 0');
 		header('Cache-Control: private');
 		header('Pragma: cache');
 		header('Content-type: application/download');
-		header('Content-Disposition: attachment; filename='.basename($file));
-		readfile($file);
+		header('Content-Disposition: attachment; filename='.basename($filename));
+		header('Content-Disposition: inline; filename='.basename($filename));
+		readfile($filename);
 		exit;
 	}
 
@@ -228,17 +233,18 @@ class FrontController extends Controller{
 	
 	public function action_fm_save_file(){
 		
-		$fileName = unescape(getVar($_POST['file-name']));
+		$_filename = getVar($_GET['file-name']);
+		$filename = WIN_SERVER ? utf2ansi($_filename) : $_filename;
 		$fileContent = unescape(getVar($_POST['file-content']));
 		
-		if(!file_exists($fileName))
-			exit('Файл '.$fileName.' не найден.');
-		if(!is_writeable($fileName))
-			exit('Невозможно сохранить файл '.$fileName.'. Нет прав на запись.');
+		if(!file_exists($filename))
+			exit('Файл '.$filename.' не найден.');
+		if(!is_writeable($filename))
+			exit('Невозможно сохранить файл '.$filename.'. Нет прав на запись.');
 		if(preg_match('/^\s*$/', $fileContent) && empty($_POST['allowEmpty']))
 			exit('Попытка сохранить пустой файл без разрешения');
 		
-		file_put_contents($fileName, $fileContent);
+		file_put_contents($filename, $fileContent);
 		echo 'ok';
 	}
 	
@@ -249,9 +255,17 @@ class FrontController extends Controller{
 	
 	public function ajax_fm_get_tree(){
 		
-		$data = array('errcode' => 0, 'errmsg' => '', 'curDir' => realpath('.'), 'dirs' => array(), 'files' => array());
+		$data = array(
+			'errcode' => 0,
+			'errmsg' => '',
+			'curDir' => realpath('.'),
+			'dirs' => array(),
+			'files' => array(),
+			'debug' => '',
+		);
 		
-		$curDir = realpath(unescape(getVar($_GET['dir'])));
+		$_curDir = unescape(getVar($_GET['dir']));
+		$curDir = realpath(WIN_SERVER ? utf2ansi($_curDir) : $_curDir);
 		if(substr($curDir, -1) != DIRECTORY_SEPARATOR)
 			$curDir .= DIRECTORY_SEPARATOR;
 			
@@ -268,20 +282,22 @@ class FrontController extends Controller{
 			return;
 		}
 		
-		$data['curDir'] = $curDir;
+		$data['curDir'] = WIN_SERVER ? ansi2utf($curDir) : $curDir;
 		
 		foreach(scandir($curDir) as $elm){
+			
 			if($elm == '.' || $elm == '..')
 				continue;
+			
 			$fullName = $curDir.'/'.$elm;
 			$isDir = is_dir($fullName);
 			// $owner = posix_getpwuid(fileowner($fullName));
 			$data[$isDir ? 'dirs' : 'files'][] = array(
-				'name' => $elm,
-				'perms' => substr(sprintf('%o', fileperms($fullName)), -3),
+				'name' => WIN_SERVER ? ansi2utf($elm) : $elm,
+				'perms' => substr(sprintf('%o', @fileperms($fullName)), -3),
 				// 'owner' => $owner['name'],
-				'size' => $isDir ? '-' : sizeFormat(filesize($fullName)),
-				'emtime' => strDate(filemtime($fullName)),
+				'size' => $isDir ? '-' : sizeFormat(@filesize($fullName)),
+				'emtime' => strDate(@filemtime($fullName)),
 			);
 		}
 		

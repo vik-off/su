@@ -47,6 +47,7 @@ var FileManager = {
 		this.activateCol('left');
 		this.displayFileTree(['left', 'right']);
 	},
+	
 	_bindEvents: function(){
 		
 		$(window).keypress(function(e){
@@ -54,6 +55,19 @@ var FileManager = {
 			// trace(e.keyCode);
 			// return false;
 			switch(e.keyCode){
+				case 8: // BACKSPACE
+					if(FileManager.curCol){
+						// alert('ololo');
+						FileManager.cd('..', FileManager.curCol);
+						return false;
+					}
+					break;
+				case 13: // ENTER
+					if(FileManager.curCol){
+						FileManager.shortcuts.enter();
+						return false;
+					}
+					break;
 				case 36: // HOME
 					if(FileManager.curCol){
 						FileManager.shortcuts.home();
@@ -66,8 +80,21 @@ var FileManager = {
 						return false;
 					}
 					break;
+				case 38: // UP
+					if(FileManager.curCol){
+						FileManager.shortcuts.up();
+						return false;
+					}
+					break;
+				case 40: // DOWN
+					if(FileManager.curCol){
+						FileManager.shortcuts.down();
+						return false;
+					}
+					break;
 				case 9: // TAB
-					return FileManager.shortcuts.tab();
+					FileManager.shortcuts.tab();
+					return false;
 				case 97: // A
 					// ctrl + A - выделить все
 					if(e.ctrlKey && FileManager.curCol){
@@ -163,8 +190,51 @@ var FileManager = {
 				FileManager.activateCol('right');
 			else
 				FileManager.activateCol('left');
-				
-			return true;
+		},
+	
+		up: function(){
+			
+			var l = FileManager.selected[FileManager.curCol].length;
+			var item;
+			if(l){
+				item = FileManager.selected[FileManager.curCol][l-1].html.prev();
+				if(!item.length){
+					item = null;
+					// item = FileManager.html[FileManager.curCol].tbody.children().last();
+				}else{
+					FileManager.unselect(FileManager.curCol);
+				}
+			}else{
+				item = FileManager.html[FileManager.curCol].tbody.children().last();
+			}
+			if(item)
+				FileManager.select(item.data('type'), item.data('name'), FileManager.curCol, item);
+		},
+		
+		down: function(){
+			
+			var l = FileManager.selected[FileManager.curCol].length;
+			var item;
+			if(l){
+				item = FileManager.selected[FileManager.curCol][l-1].html.next();
+				if(!item.length){
+					item = null;
+					// item = FileManager.html[FileManager.curCol].tbody.children().first();
+				}else{
+					FileManager.unselect(FileManager.curCol);
+				}
+			}else{
+				item = FileManager.html[FileManager.curCol].tbody.children().first();
+			}
+			if(item)
+				FileManager.select(item.data('type'), item.data('name'), FileManager.curCol, item);
+		},
+		
+		enter: function(){
+			
+			if(FileManager.selected[FileManager.curCol].length == 1){
+				FileManager.selected[FileManager.curCol][0].html.click();
+			}
 		},
 	},
 	
@@ -186,9 +256,13 @@ var FileManager = {
 	},
 	
 	_parseHash: function(path){
+		
 		var hash = location.hash;
-		if(hash.length < 2)
+		if(hash.length < 2){
+			this.curDir.left = path;
+			this.curDir.right = path;
 			return false;
+		}
 		
 		hash = hash.substr(1);
 		var pair;
@@ -206,6 +280,7 @@ var FileManager = {
 	},
 	
 	updateHash: function(){
+		
 		location.hash = '#'
 			+ 'ldir=' + this.curDir.left
 			+ '&rdir=' + this.curDir.right;
@@ -346,15 +421,18 @@ var FileManager = {
 			return this.fastMove
 				// fast move
 				? function(e){
-					var t = this;
+					var t = $(this);
 					if(e.ctrlKey)
 						FileManager.select(type, elm.name, col, this, true);
-					else
+					else{
 						FileManager.ContextMenu.create(elm.name)
-							.addOpt('открыть', function(){FileManager.actions.open($(t).data('path') + elm.name);})
-							.addOpt('править', function(){FileManager.actions.edit($(t).data('path') + elm.name);})
-							.addOpt('скачать', function(){FileManager.actions.download($(t).data('path') + elm.name);})
-							.show(e.clientX, e.clientY);
+							.addOpt('открыть', function(){FileManager.actions.open(t.data('path') + elm.name);})
+							.addOpt('править', function(){FileManager.actions.edit(t.data('path') + elm.name);})
+							.addOpt('скачать', function(){FileManager.actions.download(t.data('path') + elm.name);})
+							.show(
+								e.clientX || (t.offset().left + 50),
+								e.clientY || (t.offset().top + 5));
+					}
 					return false;
 				}
 				// no fast move

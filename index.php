@@ -10,6 +10,9 @@ define('FS_ROOT', realpath('.').DIRECTORY_SEPARATOR);
 // определение ajax-запроса
 define('AJAX_MODE', isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
 
+// определение работает ли сервер под ОС Windows
+define('WIN_SERVER', !empty($_SERVER['WINDIR']) || stripos($_SERVER['SERVER_SOFTWARE'], 'win'));
+
 // отправка Content-type заголовка
 header('Content-Type: text/html; charset=utf-8');
 
