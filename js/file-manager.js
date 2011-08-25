@@ -52,12 +52,14 @@ var FileManager = {
 		
 		$(window).keypress(function(e){
 			
-			// trace(e.keyCode);
+			if(e.target.tagName.toLowerCase() == 'input')
+				return true;
+			
+			// trace(e.keyCode)
 			// return false;
 			switch(e.keyCode){
 				case 8: // BACKSPACE
 					if(FileManager.curCol){
-						// alert('ololo');
 						FileManager.cd('..', FileManager.curCol);
 						return false;
 					}
@@ -156,6 +158,14 @@ var FileManager = {
 		},
 		
 		esc: function(){
+			
+			// скрытие контекстного меню
+			if(FileManager.ContextMenu.isDisplayed){
+				FileManager.ContextMenu.close();
+				return;
+			}
+			
+			// увод фокуса и выделения с панелей
 			if(FileManager.curCol){
 				// если есть выделенные файлы - сбросить выделение
 				if(FileManager.selected[FileManager.curCol].length)
@@ -194,6 +204,13 @@ var FileManager = {
 	
 		up: function(){
 			
+			// передвижение выделения опций меню
+			if(FileManager.ContextMenu.isDisplayed){
+				FileManager.ContextMenu.activatePrevOpt();
+				return;
+			}
+			
+			// передвижение выделения файлов
 			var l = FileManager.selected[FileManager.curCol].length;
 			var item;
 			if(l){
@@ -213,6 +230,13 @@ var FileManager = {
 		
 		down: function(){
 			
+			// передвижение выделения опций меню
+			if(FileManager.ContextMenu.isDisplayed){
+				FileManager.ContextMenu.activateNextOpt();
+				return;
+			}
+			
+			// передвижение выделения файлов
 			var l = FileManager.selected[FileManager.curCol].length;
 			var item;
 			if(l){
@@ -232,6 +256,14 @@ var FileManager = {
 		
 		enter: function(){
 			
+			// клик по выделенному элементу контекстного меню
+			if(FileManager.ContextMenu.isDisplayed){
+				if(FileManager.ContextMenu.activeOptIndex !== null)
+					FileManager.ContextMenu.options[FileManager.ContextMenu.activeOptIndex].click();
+				return;
+			}
+			
+			// клик по выделенному элементу дерева
 			if(FileManager.selected[FileManager.curCol].length == 1){
 				FileManager.selected[FileManager.curCol][0].html.click();
 			}
@@ -756,13 +788,17 @@ var FileManager = {
 	},
 	
 	ContextMenu: {
+		isDisplayed: false,
 		html: null,
+		options: [],
+		activeOptIndex: null,
+		
 		create: function(html){
 			if(this.html)
 				this.clear();
 			this.html = $('<div class="fm-context-menu"></div>');
 			
-			$(document).bind('keypress.fm-context-menu click.fm-context-menu', function(){
+			$(document).bind('click.fm-context-menu', function(e){
 				FileManager.ContextMenu.close();
 			});
 			
@@ -775,17 +811,57 @@ var FileManager = {
 			return this;
 		},
 		addOpt: function(text, clickHandler){
-			this.html.append(
-				$('<a class="fm-context-menu-opt"></a>')
-					.append(text)
-					.click(function(e){
-						clickHandler();
-						e.stopPropagation();
-						FileManager.ContextMenu.close();
-					}));
+			var optIndex = this.options.length;
+			var opt = $('<a class="fm-context-menu-opt"></a>')
+				.append(text)
+				.click(function(e){
+					clickHandler();
+					e.stopPropagation();
+					FileManager.ContextMenu.close();
+				})
+				.hover(function(){
+					$(this).addClass('active');
+					FileManager.ContextMenu.activeOptIndex = optIndex;
+				}, function(){
+					$(this).removeClass('active');
+					FileManager.ContextMenu.activeOptIndex = null;
+				});
+			this.options[optIndex] = opt;
+			this.html.append(opt);
 			return this;
 		},
+		activateNextOpt: function(){
+			var l = this.options.length;
+			if(l){
+				if(this.activeOptIndex === null){
+					this.activeOptIndex = 0;
+				}else if(this.activeOptIndex < (l - 1)){
+					this.options[this.activeOptIndex].removeClass('active');
+					this.activeOptIndex++;
+				}else{
+					this.options[this.activeOptIndex].removeClass('active');
+					this.activeOptIndex = 0;
+				}
+				this.options[this.activeOptIndex].addClass('active');
+			}
+		},
+		activatePrevOpt: function(){
+			var l = this.options.length;
+			if(l){
+				if(this.activeOptIndex === null){
+					this.activeOptIndex = l - 1;
+				}else if(this.activeOptIndex > 0){
+					this.options[this.activeOptIndex].removeClass('active');
+					this.activeOptIndex--;
+				}else{
+					this.options[this.activeOptIndex].removeClass('active');
+					this.activeOptIndex = l - 1;
+				}
+				this.options[this.activeOptIndex].addClass('active');
+			}
+		},
 		show: function(x, y){
+			this.isDisplayed = true;
 			this.html.appendTo(document.body);
 			this.html.css({
 				left: x - this.html.width() / 2,
@@ -799,10 +875,13 @@ var FileManager = {
 			return this;
 		},
 		close: function(){
+			this.isDisplayed = false;
 			if(this.html)
 				this.html.remove();
 			this.html = null;
-			$(document).unbind('keypress.fm-context-menu click.fm-context-menu');
+			this.options = [];
+			this.activeOptIndex = null;
+			$(document).unbind('click.fm-context-menu');
 			return this;
 		}
 	}

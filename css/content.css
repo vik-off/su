@@ -287,6 +287,8 @@ a.fm-context-menu-opt{
 }
 a.fm-context-menu-opt:hover{
 	text-decoration: none;
+}
+a.fm-context-menu-opt.active{
 	background-color: #E7F3FF;
 }
 
