@@ -166,7 +166,7 @@ class FrontController extends Controller{
 	
 	public function display_fm_openfile(){
 		
-		$_filename = getVar($_GET['f']);
+		$_filename = unescape(getVar($_GET['f']));
 		$filename = WIN_SERVER ? utf2ansi($_filename) : $_filename;
 		if(!file_exists($filename))
 			exit('Файл '.$filename.' не найден.');
@@ -181,7 +181,7 @@ class FrontController extends Controller{
 	
 	public function display_fm_editfile(){
 		
-		$_filename = getVar($_GET['f']);
+		$_filename = unescape(getVar($_GET['f']));
 		$filename = WIN_SERVER ? utf2ansi($_filename) : $_filename;
 		if(!file_exists($filename))
 			exit('Файл '.$filename.' не найден.');
@@ -194,7 +194,7 @@ class FrontController extends Controller{
 	
 	public function display_fm_download(){
 		
-		$_filename = getVar($_GET['f']);
+		$_filename = unescape(getVar($_GET['f']));
 		$filename = WIN_SERVER ? utf2ansi($_filename) : $_filename;
 		if(!file_exists($filename))
 			exit('Файл '.$filename.' не найден.');
@@ -233,7 +233,7 @@ class FrontController extends Controller{
 	
 	public function action_fm_save_file(){
 		
-		$_filename = getVar($_GET['file-name']);
+		$_filename = unescape(getVar($_POST['file-name']));
 		$filename = WIN_SERVER ? utf2ansi($_filename) : $_filename;
 		$fileContent = unescape(getVar($_POST['file-content']));
 		
