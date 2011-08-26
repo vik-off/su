@@ -561,12 +561,13 @@ var FileManager = {
 		this.send('act=showTree' + (path ? '&curDir=' + encodeURIComponent(path) : ''));
 	},
 	
-	reload: function(){
+	reload: function(panel){
 		
 		if(this.block)
 			return;
-			
-		this.displayFileTree(['left', 'right']);
+		
+		panel = panel ? [panel] : ['left', 'right'];
+		this.displayFileTree(panel);
 	},
 		
 	openFile: function(){

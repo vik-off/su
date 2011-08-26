@@ -289,6 +289,12 @@ a.fm-context-menu-opt:hover{
 	text-decoration: none;
 	background-color: #E7F3FF;
 }
+.fm-upload{
+	margin: 2px 0 0;
+	border: 0;
+	width: 380px;
+	height: 1.5em;
+}
 
 
 

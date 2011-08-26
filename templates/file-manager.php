@@ -60,7 +60,13 @@
 			</table>
 		</div>
 	</td>
-</tr><tr>
+</tr>
+<tr>
+	<td><iframe src="<?=href('fm-upload?panel=left');?>" class="fm-upload"></iframe></td>
+	<td></td>
+	<td><iframe src="<?=href('fm-upload?panel=right');?>" class="fm-upload"></iframe></td>
+</tr>
+<tr>
 	<td colspan="3">
 		<div id="fm-status-bar" style="margin: 7px;"></div>
 		<div id="fm-log-title">Действия</div>

@@ -16,7 +16,7 @@ function getVar(&$varname, $defaultVal = '', $type = ''){
 }
 
 function href($href){
-	return 'index.php?r='.$href;
+	return 'index.php?r='.str_replace('?', '&', $href);
 }
 
 /** RELOAD */

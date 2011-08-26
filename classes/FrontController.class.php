@@ -7,6 +7,9 @@ class FrontController extends Controller{
 	public $requestMethod = null;
 	public $requestParams = array();
 	
+	/** контейнер обмена данными между методами */
+	public $data = array();
+	
 	public static function get(){
 		
 		if(is_null(self::$_instance))
@@ -164,6 +167,19 @@ class FrontController extends Controller{
 		exit;
 	}
 	
+	public function display_fm_upload(){
+		
+		$panel = getVar($_GET['panel']);
+		$message = getVar($this->data['message']);
+		include(FS_ROOT.'templates/fm-upload.php');
+		
+		// if(!empty($this->data['message'])){
+			// echo '<pre>';
+			// print_r($_POST);
+			// print_r($_FILES);
+		// }
+	}
+	
 	public function display_fm_openfile(){
 		
 		$_filename = getVar($_GET['f']);
@@ -248,6 +264,41 @@ class FrontController extends Controller{
 		echo 'ok';
 	}
 	
+	public function action_fm_upload(){
+		
+		$this->data['message'] = '';
+		
+		$numUploadedFiles = 0;
+		$dir = unescape(getVar($_POST['dir']));
+		
+		if(!is_dir($dir)){
+			$this->data['message'] = 'ОШИБКА!\n"'.$dir.'" не является директорией';
+			return false;
+		}
+		
+		if(!is_writeable($dir)){
+			$this->data['message'] = 'ОШИБКА!\nдиректория "'.$dir.'" не доступна для записи';
+			return false;
+		}
+		
+		if(substr($dir, -1) != DIRECTORY_SEPARATOR)
+			$dir .= DIRECTORY_SEPARATOR;
+		
+		// echo $dir; die;
+		
+		foreach((array)$_FILES['files']['tmp_name'] as $index => $file){
+			if(empty($file))
+				continue;
+			$fname = $_FILES['files']['name'][$index];
+			if(file_exists($file)){
+				move_uploaded_file($file, $dir.$fname);
+				$this->data['message'] .= 'Файл "'.$fname.'" загружен\n';
+			}else{
+				$this->data['message'] .= 'не удалось загрузить файл "'.$fname.'"\n';
+			}
+		}
+		return true;
+	}
 
 	////////////////////
 	//////  AJAX  //////
