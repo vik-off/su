@@ -4,7 +4,7 @@ require_once('./data/php/func.php');
 echoHead();
 ?>
 <body>
-	
+
 <? echoTopRow();?>
 <hr>
 <h2>СКРЫТИЕ ПЛАВАЮЩЕЙ РЕКЛАМЫ</h2>
