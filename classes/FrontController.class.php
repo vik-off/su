@@ -356,6 +356,57 @@ class FrontController extends Controller{
 		return;
 	}
 	
+	public function ajax_fm_delete(){
+		
+		$numDeleted = 0;
+		$undeleted = array();
+		foreach(getVar($_POST['files'], array(), 'array') as $f){
+			$f = unescape($f);
+			if(!file_exists($f)){
+				$undeleted[] = $f.' [файл не найден]';
+				continue;
+			}
+			if(!is_writeable($f)){
+				$undeleted[] = $f.' [нет прав на удаление]';
+				continue;
+			}
+			
+			if($this->model_fm_delete($f)){
+				$numDeleted++;
+			}else{
+				$undeleted[] = $f.' [папка содержит вложенные файлы, которые не удалось удалить]';
+			}
+		}
+		
+		$report = $numDeleted
+			? (empty($undeleted) ? 'все ' : '').$numDeleted." файлов были удалены\n\n"
+			: '';
+		
+		if(!empty($undeleted))
+			$report .= "не удалось удалить файлы:\n".implode("\n", $undeleted);
+		
+		echo $report;
+	}
+	
+	public function model_fm_delete($file){
+		
+		if(!is_writeable($file))
+			return false;
+		
+		if(is_dir($file)){
+			$allDeleted = true;
+			$file = substr($file, -1) == DIRECTORY_SEPARATOR ? $file : $file.DIRECTORY_SEPARATOR;
+			foreach(scandir($file) as $f)
+				if($f != '.' && $f != '..')
+					if(!$this->model_fm_delete($file.$f))
+						$allDeleted = false;
+			if($allDeleted)
+				rmdir($file);
+		}else{
+			unlink($file);
+		}
+		return true;
+	}
 }
 
 ?>

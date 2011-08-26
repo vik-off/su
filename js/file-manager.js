@@ -1,19 +1,11 @@
 
 var FileManager = {
-	curCol: null,   // текущая столбец (для заполнения списком файлов)
-	response: '',	// переменная, содержащая ответ сервера (как правило, объект)
-	act: false,		// текущее действие
+	curCol: null,   // С‚РµРєСѓС‰Р°СЏ РїР°РЅРµР»СЊ
 		
-	mustReload: false,	// флаг перезагрузки (чтобы перезагрузить второй столбец)
-	fastMove: true,	// флаг быстрой навигации (без выделения элемента)
-	
-	selected: false,// прямая ссылка на выделенный DOM элемент
-	target: false,	// имя выделенного файла или папки
-	col: false,		// столбец, в котором находится выделенный элемент (для применения опций)
-	type: false,	// 1 - папка, 2 - файл
-	block: false,	// блокировка деятельности.
+	mustReload: false,	// С„Р»Р°Рі РїРµСЂРµР·Р°РіСЂСѓР·РєРё (С‡С‚РѕР±С‹ РїРµСЂРµР·Р°РіСЂСѓР·РёС‚СЊ РІС‚РѕСЂРѕР№ СЃС‚РѕР»Р±РµС†)
+	fastMove: true,	// С„Р»Р°Рі Р±С‹СЃС‚СЂРѕР№ РЅР°РІРёРіР°С†РёРё (Р±РµР· РІС‹РґРµР»РµРЅРёСЏ СЌР»РµРјРµРЅС‚Р°)
+	block: false,	// Р±Р»РѕРєРёСЂРѕРІРєР° РґРµСЏС‚РµР»СЊРЅРѕСЃС‚Рё.
 		
-	activeColVal: false,	//активный столбец (заголовок выделен синим)
 	html: {
 		btnFastMove: null,
 		colBoxes: null,
@@ -98,7 +90,7 @@ var FileManager = {
 					FileManager.shortcuts.tab();
 					return false;
 				case 97: // A
-					// ctrl + A - выделить все
+					// ctrl + A - РІС‹РґРµР»РёС‚СЊ РІСЃРµ
 					if(e.ctrlKey && FileManager.curCol){
 						FileManager.shortcuts.selectAll();
 						return false;
@@ -108,7 +100,10 @@ var FileManager = {
 					trace("f2");
 					return false;
 				case 46: // DELETE
-					trace("delete");
+					if(FileManager.curCol){
+						FileManager.actions.del();
+						return false;
+					}
 					break;
 				case 27: // ESC
 					FileManager.shortcuts.esc();
@@ -118,8 +113,8 @@ var FileManager = {
 		
 		$(document).click(function(e){
 			
-			// при щелчке вне коммандера, уберем выделение активной панели
-			// и деактивируем обе панели
+			// РїСЂРё С‰РµР»С‡РєРµ РІРЅРµ РєРѕРјРјР°РЅРґРµСЂР°, СѓР±РµСЂРµРј РІС‹РґРµР»РµРЅРёРµ Р°РєС‚РёРІРЅРѕР№ РїР°РЅРµР»Рё
+			// Рё РґРµР°РєС‚РёРІРёСЂСѓРµРј РѕР±Рµ РїР°РЅРµР»Рё
 			if(!$(e.target).parents('#fm-wrap').length && FileManager.curCol){
 				FileManager.unselect(FileManager.curCol);
 				FileManager.activateCol(null);
@@ -131,11 +126,11 @@ var FileManager = {
 			
 			var col = $(this).hasClass('fm-left') ? 'left' : 'right';
 			
-			// щелчек по той же самой колонке
+			// С‰РµР»С‡РµРє РїРѕ С‚РѕР№ Р¶Рµ СЃР°РјРѕР№ РєРѕР»РѕРЅРєРµ
 			if(FileManager.curCol == col){
 				FileManager.unselect(col);
 			}
-			// щелчек по неактивной колонке активизирует ее
+			// С‰РµР»С‡РµРє РїРѕ РЅРµР°РєС‚РёРІРЅРѕР№ РєРѕР»РѕРЅРєРµ Р°РєС‚РёРІРёР·РёСЂСѓРµС‚ РµРµ
 			else{
 				FileManager.activateCol(col);
 			}
@@ -153,24 +148,24 @@ var FileManager = {
 				if(t.hasClass('fm-row-file'))
 					type = 'file';
 				if(type)
-					FileManager.select(type, t.children('.fm-col-name').text(), FileManager.curCol, this, true);
+					FileManager.select(FileManager.curCol, this, true);
 			});
 		},
 		
 		esc: function(){
 			
-			// скрытие контекстного меню
+			// СЃРєСЂС‹С‚РёРµ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ
 			if(FileManager.ContextMenu.isDisplayed){
 				FileManager.ContextMenu.close();
 				return;
 			}
 			
-			// увод фокуса и выделения с панелей
+			// СѓРІРѕРґ С„РѕРєСѓСЃР° Рё РІС‹РґРµР»РµРЅРёСЏ СЃ РїР°РЅРµР»РµР№
 			if(FileManager.curCol){
-				// если есть выделенные файлы - сбросить выделение
+				// РµСЃР»Рё РµСЃС‚СЊ РІС‹РґРµР»РµРЅРЅС‹Рµ С„Р°Р№Р»С‹ - СЃР±СЂРѕСЃРёС‚СЊ РІС‹РґРµР»РµРЅРёРµ
 				if(FileManager.selected[FileManager.curCol].length)
 					FileManager.unselect(FileManager.curCol);
-				// иначе деактивировать активную колонку
+				// РёРЅР°С‡Рµ РґРµР°РєС‚РёРІРёСЂРѕРІР°С‚СЊ Р°РєС‚РёРІРЅСѓСЋ РєРѕР»РѕРЅРєСѓ
 				else
 					FileManager.activateCol(null);
 			}
@@ -179,7 +174,7 @@ var FileManager = {
 		home: function(){
 			FileManager.unselect(FileManager.curCol);
 			var item = FileManager.html[FileManager.curCol].tbody.children().first();
-			FileManager.select(item.data('type'), item.data('name'), FileManager.curCol, item);
+			FileManager.select(FileManager.curCol, item);
 			
 			FileManager.html[FileManager.curCol].tbody.parent().parent().scrollTop(0);
 		},
@@ -187,7 +182,7 @@ var FileManager = {
 		end: function(){
 			FileManager.unselect(FileManager.curCol);
 			var item = FileManager.html[FileManager.curCol].tbody.children().last();
-			FileManager.select(item.data('type'), item.data('name'), FileManager.curCol, item);
+			FileManager.select(FileManager.curCol, item);
 			
 			FileManager.html[FileManager.curCol].tbody.parent().parent().scrollTop(
 				FileManager.html[FileManager.curCol].tbody.parent().height()
@@ -204,13 +199,13 @@ var FileManager = {
 	
 		up: function(){
 			
-			// передвижение выделения опций меню
+			// РїРµСЂРµРґРІРёР¶РµРЅРёРµ РІС‹РґРµР»РµРЅРёСЏ РѕРїС†РёР№ РјРµРЅСЋ
 			if(FileManager.ContextMenu.isDisplayed){
 				FileManager.ContextMenu.activatePrevOpt();
 				return;
 			}
 			
-			// передвижение выделения файлов
+			// РїРµСЂРµРґРІРёР¶РµРЅРёРµ РІС‹РґРµР»РµРЅРёСЏ С„Р°Р№Р»РѕРІ
 			var l = FileManager.selected[FileManager.curCol].length;
 			var item;
 			if(l){
@@ -225,18 +220,18 @@ var FileManager = {
 				item = FileManager.html[FileManager.curCol].tbody.children().last();
 			}
 			if(item)
-				FileManager.select(item.data('type'), item.data('name'), FileManager.curCol, item);
+				FileManager.select(FileManager.curCol, item);
 		},
 		
 		down: function(){
 			
-			// передвижение выделения опций меню
+			// РїРµСЂРµРґРІРёР¶РµРЅРёРµ РІС‹РґРµР»РµРЅРёСЏ РѕРїС†РёР№ РјРµРЅСЋ
 			if(FileManager.ContextMenu.isDisplayed){
 				FileManager.ContextMenu.activateNextOpt();
 				return;
 			}
 			
-			// передвижение выделения файлов
+			// РїРµСЂРµРґРІРёР¶РµРЅРёРµ РІС‹РґРµР»РµРЅРёСЏ С„Р°Р№Р»РѕРІ
 			var l = FileManager.selected[FileManager.curCol].length;
 			var item;
 			if(l){
@@ -251,19 +246,19 @@ var FileManager = {
 				item = FileManager.html[FileManager.curCol].tbody.children().first();
 			}
 			if(item)
-				FileManager.select(item.data('type'), item.data('name'), FileManager.curCol, item);
+				FileManager.select(FileManager.curCol, item);
 		},
 		
 		enter: function(){
 			
-			// клик по выделенному элементу контекстного меню
+			// РєР»РёРє РїРѕ РІС‹РґРµР»РµРЅРЅРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ
 			if(FileManager.ContextMenu.isDisplayed){
 				if(FileManager.ContextMenu.activeOptIndex !== null)
 					FileManager.ContextMenu.options[FileManager.ContextMenu.activeOptIndex].click();
 				return;
 			}
 			
-			// клик по выделенному элементу дерева
+			// РєР»РёРє РїРѕ РІС‹РґРµР»РµРЅРЅРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ РґРµСЂРµРІР°
 			if(FileManager.selected[FileManager.curCol].length == 1){
 				FileManager.selected[FileManager.curCol][0].html.click();
 			}
@@ -335,7 +330,7 @@ var FileManager = {
 						return;
 					}
 					
-					// $('fm-status-bar').innerHTML = 'В директории <b><u>' + (this.curCol == 1 ? this.curDirL : this.curDirR) + '</u></b> свободно ' + this.response.freeSpace;
+					// $('fm-status-bar').innerHTML = 'Р’ РґРёСЂРµРєС‚РѕСЂРёРё <b><u>' + (this.curCol == 1 ? this.curDirL : this.curDirR) + '</u></b> СЃРІРѕР±РѕРґРЅРѕ ' + this.response.freeSpace;
 					FileManager.html[col].tbody.empty();
 					FileManager.curDir[col] = response.curDir;
 					FileManager.html[col].addr.val(response.curDir);
@@ -358,7 +353,7 @@ var FileManager = {
 					if(maxNameWidth)
 						FileManager.html[col].tbody.children().children('.fm-col-name').css('width', Math.round(maxNameWidth * 1.2));
 					
-					// последняя итерация
+					// РїРѕСЃР»РµРґРЅСЏСЏ РёС‚РµСЂР°С†РёСЏ
 					if(ci == ct){
 						FileManager.block = false;
 						FileManager.updateHash();
@@ -380,7 +375,7 @@ var FileManager = {
 					function(){$(this).removeClass('fm-row-hover');})
 				.click(this.fastMove
 					? function(){FileManager.cd('..', col); return false;}
-					: function(){FileManager.select('..', '..', col, this); return false;})
+					: function(){FileManager.select(col, this); return false;})
 				.dblclick(this.fastMove
 					? function(){return false;}
 					: function(){FileManager.cd('..', col); return false;})
@@ -391,7 +386,7 @@ var FileManager = {
 	},
 	
 	_createTreeItem: function(type, elm, col, path){
-		// папки
+		// РїР°РїРєРё
 		if(type == 'dir'){
 			return $('<tr class="fm-row-dir"></tr>')
 				.data('type', type)
@@ -408,7 +403,7 @@ var FileManager = {
 				.append('<td style="text-align: center;">-</td>')
 				.append('<td class="fm-col-emtime" title="' + elm.emtime + '">' + elm.emtime.substr(0, 11) + '</td>');
 		}
-		// файлы
+		// С„Р°Р№Р»С‹
 		else{
 			return $('<tr class="fm-row-file"></tr>')
 				.data('type', type)
@@ -429,13 +424,13 @@ var FileManager = {
 	
 	_createClickHandler: function(type, elm, col){
 		
-		// папки
+		// РїР°РїРєРё
 		if(type == 'dir'){
 			return this.fastMove
 				// fast move
 				? function(e){
 					if(e.ctrlKey)
-						FileManager.select(type, elm.name, col, this, true);
+						FileManager.select(col, this, true);
 					else
 						FileManager.cd(elm.name, col);
 					e.stopPropagation();
@@ -443,24 +438,25 @@ var FileManager = {
 				}
 				// no fast move
 				: function(e){
-					FileManager.select(type, elm.name, col, this, e.ctrlKey);
+					FileManager.select(col, this, e.ctrlKey);
 					e.stopPropagation();
 					return false;
 				};
 		}
-		// файлы
+		// С„Р°Р№Р»С‹
 		else{
 			return this.fastMove
 				// fast move
 				? function(e){
 					var t = $(this);
 					if(e.ctrlKey)
-						FileManager.select(type, elm.name, col, this, true);
+						FileManager.select(col, this, true);
 					else{
 						FileManager.ContextMenu.create(elm.name)
-							.addOpt('открыть', function(){FileManager.actions.open(t.data('path') + elm.name);})
-							.addOpt('править', function(){FileManager.actions.edit(t.data('path') + elm.name);})
-							.addOpt('скачать', function(){FileManager.actions.download(t.data('path') + elm.name);})
+							.addOpt('РѕС‚РєСЂС‹С‚СЊ', function(){FileManager.actions.open(t.data('path') + elm.name);})
+							.addOpt('РїСЂР°РІРёС‚СЊ', function(){FileManager.actions.edit(t.data('path') + elm.name);})
+							.addOpt('СЃРєР°С‡Р°С‚СЊ', function(){FileManager.actions.download(t.data('path') + elm.name);})
+							.addOpt('СѓРґР°Р»РёС‚СЊ', function(){FileManager.actions.del(t.data('path') + elm.name);})
 							.show(
 								e.clientX || (t.offset().left + 50),
 								e.clientY || (t.offset().top + 5));
@@ -469,7 +465,7 @@ var FileManager = {
 				}
 				// no fast move
 				: function(e){
-					FileManager.select(type, elm.name, col, this, e.ctrlKey);
+					FileManager.select(col, this, e.ctrlKey);
 					return false;
 				};
 		}
@@ -481,7 +477,7 @@ var FileManager = {
 				? function(){return false;}
 				: function(e){FileManager.cd(elm.name, col); return false;};
 		}
-		// файлы
+		// С„Р°Р№Р»С‹
 		else{
 			return this.fastMove
 				? function(){trace(type + ' ' + elm.name + ' ' + col); return false;}
@@ -509,58 +505,58 @@ var FileManager = {
 		
 		if(FileManager.act == 'fileTree'){
 			try{eval("FileManager.response = " + (XHR.responseText));}
-			catch(e){alert("Ошибка распознавания данных!\n\n\tОтвет сервера:\n" + XHR.responseText + '\n\n\tОшибка Javascript:\n' + e);}
+			catch(e){alert("РћС€РёР±РєР° СЂР°СЃРїРѕР·РЅР°РІР°РЅРёСЏ РґР°РЅРЅС‹С…!\n\n\tРћС‚РІРµС‚ СЃРµСЂРІРµСЂР°:\n" + XHR.responseText + '\n\n\tРћС€РёР±РєР° Javascript:\n' + e);}
 			try{
 				if(FileManager.curCol == 1){FileManager.curDirL = decodeURIComponent(FileManager.response.curDir); FileManager.activeCol(1);}
 				else if(FileManager.curCol == 2){FileManager.curDirR = decodeURIComponent(FileManager.response.curDir); FileManager.activeCol(2);}
 				else{FileManager.curDirL = FileManager.curDirR = decodeURIComponent(FileManager.response.curDir); FileManager.activeCol(0);}
-				//заполнить таблицу
+				//Р·Р°РїРѕР»РЅРёС‚СЊ С‚Р°Р±Р»РёС†Сѓ
 				FileManager.showList();
-				//если перезагрузка
+				//РµСЃР»Рё РїРµСЂРµР·Р°РіСЂСѓР·РєР°
 				if(FileManager.mustReload){FileManager.mustReload = false; FileManager.act = 'FileManager'; FileManager.curCol = 2; FileManager.send('act=showTree&curDir=' + encodeURI(FileManager.curDirR));}
 			}
-			catch(e){alert("Ошибка декодирования данных!\nКолонка: "+FileManager.curCol+"\nОтвет сервера:\n" + XHR.responseText + '\n\nОшибка Javascript:\n' + e);}
+			catch(e){alert("РћС€РёР±РєР° РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ РґР°РЅРЅС‹С…!\nРљРѕР»РѕРЅРєР°: "+FileManager.curCol+"\nРћС‚РІРµС‚ СЃРµСЂРІРµСЂР°:\n" + XHR.responseText + '\n\nРћС€РёР±РєР° Javascript:\n' + e);}
 		}
 		else if(FileManager.act == 'rename'){
-			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Файл успешно переименован.', 'ok'); FileManager.reload();}
-			else if(XHR.responseText.substr(0,3) == '02.'){FileManager.log('Файл не найден!', 'error');}
-			else if(XHR.responseText.substr(0,3) == '03.'){FileManager.log('Файл с таким именем уже существует.', 'error');}
-			else if(XHR.responseText.substr(0,3) == '04.'){alert('Ошибка переименования.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка переименования.\n\n' + XHR.responseText);}
+			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Р¤Р°Р№Р» СѓСЃРїРµС€РЅРѕ РїРµСЂРµРёРјРµРЅРѕРІР°РЅ.', 'ok'); FileManager.reload();}
+			else if(XHR.responseText.substr(0,3) == '02.'){FileManager.log('Р¤Р°Р№Р» РЅРµ РЅР°Р№РґРµРЅ!', 'error');}
+			else if(XHR.responseText.substr(0,3) == '03.'){FileManager.log('Р¤Р°Р№Р» СЃ С‚Р°РєРёРј РёРјРµРЅРµРј СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚.', 'error');}
+			else if(XHR.responseText.substr(0,3) == '04.'){alert('РћС€РёР±РєР° РїРµСЂРµРёРјРµРЅРѕРІР°РЅРёСЏ.\n\n' + XHR.responseText);}
+			else{alert('РќРµРїСЂРµРґРІРёРґРµРЅРЅР°СЏ РѕС€РёР±РєР° РїРµСЂРµРёРјРµРЅРѕРІР°РЅРёСЏ.\n\n' + XHR.responseText);}
 		}
 		else if(FileManager.act == 'copy'){
-			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Файл успешно копирован.', 'ok'); FileManager.reload();}
-			else if(XHR.responseText.substr(0,3) == '02.'){alert('Файл не найден!');}
-			else if(XHR.responseText.substr(0,3) == '03.'){if(confirm('Файл с таким именем существует. Перезаписать?')){FileManager.optCopy(true);}}
-			else if(XHR.responseText.substr(0,3) == '04.'){alert('Ошибка копирования.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка копирования.\n\n' + XHR.responseText);}
+			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Р¤Р°Р№Р» СѓСЃРїРµС€РЅРѕ РєРѕРїРёСЂРѕРІР°РЅ.', 'ok'); FileManager.reload();}
+			else if(XHR.responseText.substr(0,3) == '02.'){alert('Р¤Р°Р№Р» РЅРµ РЅР°Р№РґРµРЅ!');}
+			else if(XHR.responseText.substr(0,3) == '03.'){if(confirm('Р¤Р°Р№Р» СЃ С‚Р°РєРёРј РёРјРµРЅРµРј СЃСѓС‰РµСЃС‚РІСѓРµС‚. РџРµСЂРµР·Р°РїРёСЃР°С‚СЊ?')){FileManager.optCopy(true);}}
+			else if(XHR.responseText.substr(0,3) == '04.'){alert('РћС€РёР±РєР° РєРѕРїРёСЂРѕРІР°РЅРёСЏ.\n\n' + XHR.responseText);}
+			else{alert('РќРµРїСЂРµРґРІРёРґРµРЅРЅР°СЏ РѕС€РёР±РєР° РєРѕРїРёСЂРѕРІР°РЅРёСЏ.\n\n' + XHR.responseText);}
 		}
 		else if(FileManager.act == 'replace'){
-			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Файл успешно перемещен.', 'ok'); FileManager.reload();}
-			else if(XHR.responseText.substr(0,3) == '02.'){alert('Файл не найден!');}
-			else if(XHR.responseText.substr(0,3) == '03.'){if(confirm('Файл с таким именем существует. Перезаписать?')){FileManager.optReplace(true);}}
-			else if(XHR.responseText.substr(0,3) == '04.'){alert('Ошибка перемещения.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка перемещения.\n\n' + XHR.responseText);}
+			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Р¤Р°Р№Р» СѓСЃРїРµС€РЅРѕ РїРµСЂРµРјРµС‰РµРЅ.', 'ok'); FileManager.reload();}
+			else if(XHR.responseText.substr(0,3) == '02.'){alert('Р¤Р°Р№Р» РЅРµ РЅР°Р№РґРµРЅ!');}
+			else if(XHR.responseText.substr(0,3) == '03.'){if(confirm('Р¤Р°Р№Р» СЃ С‚Р°РєРёРј РёРјРµРЅРµРј СЃСѓС‰РµСЃС‚РІСѓРµС‚. РџРµСЂРµР·Р°РїРёСЃР°С‚СЊ?')){FileManager.optReplace(true);}}
+			else if(XHR.responseText.substr(0,3) == '04.'){alert('РћС€РёР±РєР° РїРµСЂРµРјРµС‰РµРЅРёСЏ.\n\n' + XHR.responseText);}
+			else{alert('РќРµРїСЂРµРґРІРёРґРµРЅРЅР°СЏ РѕС€РёР±РєР° РїРµСЂРµРјРµС‰РµРЅРёСЏ.\n\n' + XHR.responseText);}
 		}
 		else if(FileManager.act == 'delFile'){
-			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Файл удален', 'ok'); FileManager.reload();}
-			else if(XHR.responseText.substr(0,3) == '02.'){alert('Файл не найден!');}
-			else if(XHR.responseText.substr(0,3) == '03.'){alert('Ошибка удаления файла.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка удаления.\n\n' + XHR.responseText);}
+			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Р¤Р°Р№Р» СѓРґР°Р»РµРЅ', 'ok'); FileManager.reload();}
+			else if(XHR.responseText.substr(0,3) == '02.'){alert('Р¤Р°Р№Р» РЅРµ РЅР°Р№РґРµРЅ!');}
+			else if(XHR.responseText.substr(0,3) == '03.'){alert('РћС€РёР±РєР° СѓРґР°Р»РµРЅРёСЏ С„Р°Р№Р»Р°.\n\n' + XHR.responseText);}
+			else{alert('РќРµРїСЂРµРґРІРёРґРµРЅРЅР°СЏ РѕС€РёР±РєР° СѓРґР°Р»РµРЅРёСЏ.\n\n' + XHR.responseText);}
 		}
 		else if(FileManager.act == 'mkdir'){
 			var ans = XHR.responseText.substr(0,3);
-			if(ans == '01.'){FileManager.log('Папка успешно создана', 'ok'); FileManager.reload();}
-			else if(ans == '02.'){FileManager.log('Директория с таким именем уже существует.', 'error');}
-			else if(ans == '03.'){alert('Ошибка создания папки.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка.\n\n' + XHR.responseText);}
+			if(ans == '01.'){FileManager.log('РџР°РїРєР° СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅР°', 'ok'); FileManager.reload();}
+			else if(ans == '02.'){FileManager.log('Р”РёСЂРµРєС‚РѕСЂРёСЏ СЃ С‚Р°РєРёРј РёРјРµРЅРµРј СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚.', 'error');}
+			else if(ans == '03.'){alert('РћС€РёР±РєР° СЃРѕР·РґР°РЅРёСЏ РїР°РїРєРё.\n\n' + XHR.responseText);}
+			else{alert('РќРµРїСЂРµРґРІРёРґРµРЅРЅР°СЏ РѕС€РёР±РєР°.\n\n' + XHR.responseText);}
 		}
 		else if(FileManager.act == 'mkfile'){
 			var ans = XHR.responseText.substr(0,3);
-			if(ans == '01.'){FileManager.log('файл успешно создан', 'ok'); FileManager.reload();}
-			else if(ans == '02.'){FileManager.log('Файл с таким именем уже существует.', 'error');}
-			else if(ans == '03.'){alert('Ошибка создания файла.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка.\n\n' + XHR.responseText);}
+			if(ans == '01.'){FileManager.log('С„Р°Р№Р» СѓСЃРїРµС€РЅРѕ СЃРѕР·РґР°РЅ', 'ok'); FileManager.reload();}
+			else if(ans == '02.'){FileManager.log('Р¤Р°Р№Р» СЃ С‚Р°РєРёРј РёРјРµРЅРµРј СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚.', 'error');}
+			else if(ans == '03.'){alert('РћС€РёР±РєР° СЃРѕР·РґР°РЅРёСЏ С„Р°Р№Р»Р°.\n\n' + XHR.responseText);}
+			else{alert('РќРµРїСЂРµРґРІРёРґРµРЅРЅР°СЏ РѕС€РёР±РєР°.\n\n' + XHR.responseText);}
 		}
 	},
 	
@@ -602,100 +598,93 @@ var FileManager = {
 		this.displayFileTree(panel);
 	},
 		
-	openFile: function(){
-		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Выберите файл!");return;}
-		if(this.type != 2){alert("Надо выбрать файл!");return;}
-		var param = encodeURI((this.col == 1 ? FileManager.curDirL : FileManager.curDirR) + '/' + this.target);
-		window.open('data/php/fileView.php?fileView=' + param);
-	},
-		
 	optRename: function(){
 		FileManager.act = 'rename';
-		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Выберите файл!");return;}
+		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Р’С‹Р±РµСЂРёС‚Рµ С„Р°Р№Р»!");return;}
 		var path = this.col == 1 ? FileManager.curDirL : FileManager.curDirR;
-		if(!path){alert('Ошибка пути');return;}
-		var name = prompt('Введите имя', this.target);
+		if(!path){alert('РћС€РёР±РєР° РїСѓС‚Рё');return;}
+		var name = prompt('Р’РІРµРґРёС‚Рµ РёРјСЏ', this.target);
 		if(name === false){return;}
-		if(!name.length){alert('Имя не должно быть пустым');return;}
-		if(this.target == name){log('имена совпадают','error');return;}
+		if(!name.length){alert('РРјСЏ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј');return;}
+		if(this.target == name){log('РёРјРµРЅР° СЃРѕРІРїР°РґР°СЋС‚','error');return;}
 		this.block = true;
 		FileManager.send('act=rename&path=' + encodeURI(path) + '&oldname=' + encodeURI(this.target) + '&newname=' + encodeURI(name));
 	},
 	
 	optLoad: function(){
-		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Выберите файл!");return;}
-		if(this.type != 2){alert("Надо выбрать файл!");return;}
+		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Р’С‹Р±РµСЂРёС‚Рµ С„Р°Р№Р»!");return;}
+		if(this.type != 2){alert("РќР°РґРѕ РІС‹Р±СЂР°С‚СЊ С„Р°Р№Р»!");return;}
 		var param = encodeURI((this.col == 1 ? FileManager.curDirL : FileManager.curDirR) + '/' + this.target);
 		window.open('data/php/fileLoader.php?loadfile=' + param, 'fileLoader');
 	},
 	
 	optCopy: function(anyCase){
 		FileManager.act = 'copy';
-		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Выберите файл!");return;}
-		if(!FileManager.curDirL || !FileManager.curDirR){alert("Ошибка путей!");return;}
-		if(this.type != 2){alert("Надо выбрать файл!");return;}
-		if(FileManager.curDirL == FileManager.curDirR){alert("Директории совпадают.");return;}
+		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Р’С‹Р±РµСЂРёС‚Рµ С„Р°Р№Р»!");return;}
+		if(!FileManager.curDirL || !FileManager.curDirR){alert("РћС€РёР±РєР° РїСѓС‚РµР№!");return;}
+		if(this.type != 2){alert("РќР°РґРѕ РІС‹Р±СЂР°С‚СЊ С„Р°Р№Р»!");return;}
+		if(FileManager.curDirL == FileManager.curDirR){alert("Р”РёСЂРµРєС‚РѕСЂРёРё СЃРѕРІРїР°РґР°СЋС‚.");return;}
 		this.block = true;
 		FileManager.send('act=copyFile' + (anyCase ? '&anyCase=yes' : '') + '&dirFrom=' + encodeURI(this.col == 1 ? FileManager.curDirL : FileManager.curDirR) + '&dirTo=' + encodeURI(this.col == 2 ? FileManager.curDirL : FileManager.curDirR) + '&fname=' + encodeURI(this.target));
 	},
 	
 	optReplace: function(anyCase){
 		FileManager.act = 'replace';
-		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Выберите файл!");return;}
-		if(!FileManager.curDirL || !FileManager.curDirR){alert("Ошибка путей!");return;}
-		if(this.type != 2){alert("Надо выбрать файл!");return;}
-		if(!anyCase){if(!confirm('Переместить файл "' + this.target + '"?')){return;}}
-		if(FileManager.curDirL == FileManager.curDirR){alert("Директории совпадают.");return;}
+		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Р’С‹Р±РµСЂРёС‚Рµ С„Р°Р№Р»!");return;}
+		if(!FileManager.curDirL || !FileManager.curDirR){alert("РћС€РёР±РєР° РїСѓС‚РµР№!");return;}
+		if(this.type != 2){alert("РќР°РґРѕ РІС‹Р±СЂР°С‚СЊ С„Р°Р№Р»!");return;}
+		if(!anyCase){if(!confirm('РџРµСЂРµРјРµСЃС‚РёС‚СЊ С„Р°Р№Р» "' + this.target + '"?')){return;}}
+		if(FileManager.curDirL == FileManager.curDirR){alert("Р”РёСЂРµРєС‚РѕСЂРёРё СЃРѕРІРїР°РґР°СЋС‚.");return;}
 		this.block = true;
 		FileManager.send('act=replaceFile' + (anyCase ? '&anyCase=yes' : '') + '&dirFrom=' + encodeURI(this.col == 1 ? FileManager.curDirL : FileManager.curDirR) + '&dirTo=' + encodeURI(this.col == 2 ? FileManager.curDirL : FileManager.curDirR) + '&fname=' + encodeURI(this.target));
 	},
 	
 	optDelFile: function(){
 		FileManager.act = 'delFile';
-		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Выберите файл!");return;}
-		if(!confirm('Удалить файл "' + this.target + '"?')){return;}
+		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Р’С‹Р±РµСЂРёС‚Рµ С„Р°Р№Р»!");return;}
+		if(!confirm('РЈРґР°Р»РёС‚СЊ С„Р°Р№Р» "' + this.target + '"?')){return;}
 		var path = this.col == 1 ? FileManager.curDirL : FileManager.curDirR;
-		if(!path){alert("Ошибка пути!");return;}
+		if(!path){alert("РћС€РёР±РєР° РїСѓС‚Рё!");return;}
 		this.block = true;
 		FileManager.send('act=delFile&fullpath=' + encodeURI(path + '/' + this.target));
 	},
 		
 	optMkdir: function(){
 		FileManager.act = 'mkdir';
-		if(!this.activeColVal){alert('Выберите столбец.'); return;}
+		if(!this.activeColVal){alert('Р’С‹Р±РµСЂРёС‚Рµ СЃС‚РѕР»Р±РµС†.'); return;}
 		var path = this.activeColVal == 'fm-left-col' ? this.curDirL : this.curDirR;
-		if(!path){alert('Ошибка пути');return;}
-		var name = prompt('Введите имя папки','Новая папка');
+		if(!path){alert('РћС€РёР±РєР° РїСѓС‚Рё');return;}
+		var name = prompt('Р’РІРµРґРёС‚Рµ РёРјСЏ РїР°РїРєРё','РќРѕРІР°СЏ РїР°РїРєР°');
 		if(name === false){return;}
-		if(!name.length){alert('Имя папки не должно быть пустым'); this.optMkdir();return;}
+		if(!name.length){alert('РРјСЏ РїР°РїРєРё РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј'); this.optMkdir();return;}
 		this.block = true;
 		FileManager.send('act=mkdir&path=' + encodeURI(path) + '&name=' + encodeURI(name));
 	},
 	
 	optMkfile: function(){
 		FileManager.act = 'mkfile';
-		if(!this.activeColVal){alert('Выберите столбец.'); return;}
+		if(!this.activeColVal){alert('Р’С‹Р±РµСЂРёС‚Рµ СЃС‚РѕР»Р±РµС†.'); return;}
 		var path = this.activeColVal == 'fm-left-col' ? this.curDirL : this.curDirR;
-		if(!path){alert('Ошибка пути');return;}
-		var name = prompt('Введите имя файла','file.txt');
+		if(!path){alert('РћС€РёР±РєР° РїСѓС‚Рё');return;}
+		var name = prompt('Р’РІРµРґРёС‚Рµ РёРјСЏ С„Р°Р№Р»Р°','file.txt');
 		if(name === false){return;}
-		if(!name.length){alert('Имя файла не должно быть пустым'); this.optMkfile();return;}
+		if(!name.length){alert('РРјСЏ С„Р°Р№Р»Р° РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј'); this.optMkfile();return;}
 		this.block = true;
 		FileManager.send('act=mkfile&path=' + encodeURI(path) + '&name=' + encodeURI(name));
 	},
 
-	select: function(type, name, col, elm, append){
+	select: function(col, elm, append){
 		
 		if(this.block)
 			return;
 		
-		// если выделение не добавляется, очистить все предыдущие выбранные элементы
+		// РµСЃР»Рё РІС‹РґРµР»РµРЅРёРµ РЅРµ РґРѕР±Р°РІР»СЏРµС‚СЃСЏ, РѕС‡РёСЃС‚РёС‚СЊ РІСЃРµ РїСЂРµРґС‹РґСѓС‰РёРµ РІС‹Р±СЂР°РЅРЅС‹Рµ СЌР»РµРјРµРЅС‚С‹
 		if(!append){
 			this.unselect(col);
 		}
 		
-		// если файл должен быть добавлен в выделение, и при этом уже выделен,
-		// тогда снимем выделение
+		// РµСЃР»Рё С„Р°Р№Р» РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РґРѕР±Р°РІР»РµРЅ РІ РІС‹РґРµР»РµРЅРёРµ, Рё РїСЂРё СЌС‚РѕРј СѓР¶Рµ РІС‹РґРµР»РµРЅ,
+		// С‚РѕРіРґР° СЃРЅРёРјРµРј РІС‹РґРµР»РµРЅРёРµ
 		if(append){
 			for(var i = this.selected[col].length - 1; i >= 0; i--){
 				if(this.selected[col][i].name == name){
@@ -706,10 +695,11 @@ var FileManager = {
 			}
 		}
 		
+		var $elm = $(elm);
 		var item = {
-			type: type, // тип (файл или папка)
-			name: name, // имя выделенного файла
-			html: $(elm), // jquery dom объект tr-строки
+			type:     $elm.data('type'),                       // С‚РёРї (С„Р°Р№Р» РёР»Рё РїР°РїРєР°)
+			fullName: $elm.data('path') + $elm.data('name'),   // РїРѕР»РЅС‹Р№ РїСѓС‚СЊ РІС‹РґРµР»РµРЅРЅРѕРіРѕ С„Р°Р№Р»Р°
+			html:     $elm,                                    // jquery dom РѕР±СЉРµРєС‚ tr-СЃС‚СЂРѕРєРё
 		}
 		item.html.addClass('fm-select');
 		this.selected[col].push(item);
@@ -753,10 +743,10 @@ var FileManager = {
 			
 		if(elm.checked == true){
 			this.fastMove = true;
-			this.log('Быстрая навигация включена');
+			this.log('Р‘С‹СЃС‚СЂР°СЏ РЅР°РІРёРіР°С†РёСЏ РІРєР»СЋС‡РµРЅР°');
 		}else{
 			this.fastMove = false;
-			this.log('Быстрая навигация отключена');
+			this.log('Р‘С‹СЃС‚СЂР°СЏ РЅР°РІРёРіР°С†РёСЏ РѕС‚РєР»СЋС‡РµРЅР°');
 		}
 		this.displayFileTree(['left', 'right']);
 	},
@@ -785,6 +775,32 @@ var FileManager = {
 		},
 		download: function(fullname){
 			window.open(href('fm-download&f=' + fullname), '_blank');
+		},
+		del: function(fullname){
+			
+			var files = [];
+			if(fullname){
+				files.push(fullname);
+			}else if(FileManager.curCol && FileManager.selected[FileManager.curCol].length){
+				for(var i = FileManager.selected[FileManager.curCol].length - 1; i >= 0; i--)
+					files.push(FileManager.selected[FileManager.curCol][i].fullName);
+			}
+			
+			if(!files.length){
+				alert('РЅРµС‡РµРіРѕ СѓРґР°Р»СЏС‚СЊ');
+				return;
+			}
+			
+			var filesStr = '';
+			for(var i = files.length - 1; i >= 0; i--)
+				filesStr += '\n' + files[i];
+				
+			if(confirm('СѓРґР°Р»РёС‚СЊ ' + files.length + ' С„Р°Р№Р»РѕРІ Р±РµР·РІРѕР·РІСЂР°С‚РЅРѕ?\n' + filesStr)){
+				$.post(href('fm-delete'), {files: files}, function(response){
+					FileManager.reload();
+					alert(response);
+				});
+			}
 		},
 	},
 	

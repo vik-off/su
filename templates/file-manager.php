@@ -16,11 +16,11 @@
 		<tr>
 			<td><a onclick="FileManager.reload();">Обновить</a></td>
 			<td><a>Редакторовать</a></td>
-			<td><a onclick="FileManager.optLoad();">Скачать</a></td>
-			<td><a onclick="FileManager.optRename();">Переименовать</a></td>
-			<td><a onclick="FileManager.optCopy();">Копировать</a></td>
-			<td><a onclick="FileManager.optReplace();">Переместить</a></td>
-			<td><a onclick="FileManager.optDelFile();">Удалить</a></td>
+			<td><a href='#' onclick="FileManager.optLoad(); return false;">Скачать</a></td>
+			<td><a href='#' onclick="FileManager.optRename(); return false;">Переименовать</a></td>
+			<td><a href='#' onclick="return false;">Копировать</a></td>
+			<td><a href='#' onclick="FileManager.optReplace(); return false;">Переместить</a></td>
+			<td><a href='#' onclick="FileManager.actions.del(); return false;">Удалить</a></td>
 		</tr>
 		</table>
 	</td>
