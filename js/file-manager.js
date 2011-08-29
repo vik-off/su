@@ -13,11 +13,13 @@ var FileManager = {
 			addr: null,
 			col: null,
 			tbody: null,
+			freeSpace: null,
 		},
 		right: {
 			addr: null,
 			col: null,
 			tbody: null,
+			freeSpace: null,
 		}
 	},
 	curDir: {
@@ -273,11 +275,13 @@ var FileManager = {
 				addr: $('#fm-addr-left'),
 				col: $('#fm-left-col'),
 				tbody: $('#fm-left-col-tbody'),
+				freeSpace: $('#fm-left-freespace'),
 			},
 			right: {
 				addr: $('#fm-addr-right'),
 				col: $('#fm-right-col'),
 				tbody: $('#fm-right-col-tbody'),
+				freeSpace: $('#fm-right-freespace'),
 			}
 		}
 	},
@@ -330,7 +334,7 @@ var FileManager = {
 						return;
 					}
 					
-					// $('fm-status-bar').innerHTML = 'В директории <b><u>' + (this.curCol == 1 ? this.curDirL : this.curDirR) + '</u></b> свободно ' + this.response.freeSpace;
+					FileManager.html[col].freeSpace.html('В каталоге  свободно ' + response.freeSpace);
 					FileManager.html[col].tbody.empty();
 					FileManager.curDir[col] = response.curDir;
 					FileManager.html[col].addr.val(response.curDir);

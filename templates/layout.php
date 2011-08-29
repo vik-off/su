@@ -58,8 +58,6 @@
 					<option value="globals">глобальные массивы и переменные
 					<option value="file-manager">файловый менеджер
 					<option value="sqlManager.php">SQL менеджер
-					<option value="fileUpload.php">загрузка файлов на сервер
-					<option value="socketBrowser.php">сокет браузер
 				</select>
 				<script type="text/javascript">
 				$('#top-menu-select').val('<?= FrontController::get()->requestMethod; ?>');

@@ -312,6 +312,7 @@ class FrontController extends Controller{
 			'curDir' => realpath('.'),
 			'dirs' => array(),
 			'files' => array(),
+			'freeSpace' => '',
 			'debug' => '',
 		);
 		
@@ -334,6 +335,7 @@ class FrontController extends Controller{
 		}
 		
 		$data['curDir'] = WIN_SERVER ? ansi2utf($curDir) : $curDir;
+		$data['freeSpace'] = sizeFormat(disk_free_space($curDir));
 		
 		foreach(scandir($curDir) as $elm){
 			
@@ -388,6 +390,11 @@ class FrontController extends Controller{
 		echo $report;
 	}
 	
+
+	////////////////////
+	//////  MODEL  /////
+	////////////////////
+	
 	public function model_fm_delete($file){
 		
 		if(!is_writeable($file))
@@ -407,6 +414,7 @@ class FrontController extends Controller{
 		}
 		return true;
 	}
+
 }
 
 ?>

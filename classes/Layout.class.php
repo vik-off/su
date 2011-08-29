@@ -129,6 +129,9 @@ class Layout{
 		
 		extract($variables);
 		
+		foreach($variables as $k => $v)
+			$this->$k = $v;
+			
 		ob_start();
 		include($this->_tplPath.$file);
 		$this->_htmlContent = ob_get_clean();

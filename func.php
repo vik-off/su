@@ -107,3 +107,4 @@ function ansi2utf($str){
 function utf2ansi($str){
 	return function_exists('iconv') ? iconv('UTF-8','windows-1251', $str) : $str;
 }
+

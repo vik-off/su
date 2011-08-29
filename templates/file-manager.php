@@ -62,6 +62,11 @@
 	</td>
 </tr>
 <tr>
+	<td id="fm-left-freespace"></td>
+	<td></td>
+	<td id="fm-right-freespace"></td>
+</tr>
+<tr>
 	<td><iframe src="<?=href('fm-upload?panel=left');?>" class="fm-upload"></iframe></td>
 	<td></td>
 	<td><iframe src="<?=href('fm-upload?panel=right');?>" class="fm-upload"></iframe></td>
