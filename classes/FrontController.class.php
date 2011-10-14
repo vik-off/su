@@ -226,7 +226,7 @@ class FrontController extends Controller{
 		readfile($filename);
 		exit;
 	}
-
+	
 	////////////////////
 	////// ACTION //////
 	////////////////////
