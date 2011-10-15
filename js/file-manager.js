@@ -886,7 +886,7 @@ var FileManager = {
 			this.html.appendTo(document.body);
 			this.html.css({
 				left: x - this.html.width() / 2,
-				top: y - this.html.height() / 2,
+				top: y + $(document).scrollTop() - this.html.height() / 2,
 			});
 			return this;
 		},
