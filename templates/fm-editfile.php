@@ -66,8 +66,8 @@
 						<h1 style="text-align: center;line-height: 30px;"><?= $filename; ?> </h1>
 						<div style="position: absolute; top: 5px; right: 10px;">
 							<span id="save-icon">сохранено</span>
-							<input type="button" value="закрыть" onclick="if(confirm('Выйти без сохранения изменений?')){window.close();}" />
 							<input type="submit" value="сохранить" />
+							<input type="button" value="закрыть" onclick="if(confirm('Выйти без сохранения изменений?')){window.close();}" />
 						</div>
 					</div>
 				</td>

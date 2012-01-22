@@ -146,9 +146,9 @@ a.fm-opt-icon:active{
 	border:solid 1px #999999;
 	background-color:#FFFFFF;
 }
-.fm-col-box > div{
-	height: 500px;
+.fm-col-scroller{
 	overflow: auto;
+	position: relative;
 }
 /* заголовки колонок */
 .fm-col>thead th{
@@ -251,9 +251,11 @@ a.fm-half-jlink::selection{
 	background-color:#FFFFFF;
 	border:solid 1px #777777;
 	border-top-style:none;
-	height:60px;
+	height:40px;
 	padding:2px 4px;
 	overflow:auto;
+}
+#fm-log-body *{
 	font-size: 11px;
 }
 .fm-log-date{

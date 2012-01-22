@@ -38,8 +38,10 @@ var FileManager = {
 		
 		if(!this._parseHash(path));
 		
+		
 		this.activateCol('left');
 		this.displayFileTree(['left', 'right']);
+		this.fitHeight(true);
 	},
 	
 	_bindEvents: function(){
@@ -210,15 +212,15 @@ var FileManager = {
 			// передвижение выделения файлов
 			var l = FileManager.selected[FileManager.curCol].length;
 			var item;
-			if(l){
+			if (l) {
 				item = FileManager.selected[FileManager.curCol][l-1].html.prev();
-				if(!item.length){
+				if (!item.length) {
 					item = null;
 					// item = FileManager.html[FileManager.curCol].tbody.children().last();
-				}else{
+				} else {
 					FileManager.unselect(FileManager.curCol);
 				}
-			}else{
+			} else {
 				item = FileManager.html[FileManager.curCol].tbody.children().last();
 			}
 			if(item)
@@ -276,12 +278,14 @@ var FileManager = {
 				col: $('#fm-left-col'),
 				tbody: $('#fm-left-col-tbody'),
 				freeSpace: $('#fm-left-freespace'),
+				scroller: $('.fm-col-scroller.left'),
 			},
 			right: {
 				addr: $('#fm-addr-right'),
 				col: $('#fm-right-col'),
 				tbody: $('#fm-right-col-tbody'),
 				freeSpace: $('#fm-right-freespace'),
+				scroller: $('.fm-col-scroller.right'),
 			}
 		}
 	},
@@ -384,7 +388,7 @@ var FileManager = {
 					? function(){return false;}
 					: function(){FileManager.cd('..', col); return false;})
 			.append('<td class="fm-col-icon"><img alt="f" src="data/images/up.png"></td>')
-			.append($('<td class="fm-col-name">..</td>'))
+			.append($('<td class="fm-col-name"><label>..</label></td>'))
 			.append('<td></td>')
 			.append('<td></td>');
 	},
@@ -403,7 +407,7 @@ var FileManager = {
 				.dblclick(FileManager._createDblClickHandler(type, elm, col))
 				
 				.append('<td class="fm-col-icon"><img alt="d" src="data/images/fldr.png"></td>')
-				.append($('<td class="fm-col-name">' + elm.name + '</td>'))
+				.append($('<td class="fm-col-name"><label>' + elm.name + '</label></td>'))
 				.append('<td style="text-align: center;">-</td>')
 				.append('<td class="fm-col-emtime" title="' + elm.emtime + '">' + elm.emtime.substr(0, 11) + '</td>');
 		}
@@ -420,7 +424,7 @@ var FileManager = {
 				.dblclick(FileManager._createDblClickHandler(type, elm, col))
 				
 				.append('<td class="fm-col-icon"><img alt="f" src="data/images/file.png"></td>')
-				.append($('<td class="fm-col-name">' + elm.name + '</td>'))
+				.append($('<td class="fm-col-name"><label>' + elm.name + '</label></td>'))
 				.append('<td style="text-align: right;">' + elm.size + '</td>')
 				.append('<td class="fm-col-emtime" title="' + elm.emtime + '">' + elm.emtime.substr(0, 11) + '</td>');
 		}
@@ -705,9 +709,25 @@ var FileManager = {
 			fullName: $elm.data('path') + $elm.data('name'),   // полный путь выделенного файла
 			html:     $elm,                                    // jquery dom объект tr-строки
 		}
+		
 		item.html.addClass('fm-select');
 		this.selected[col].push(item);
 		this.activateCol(col);
+		
+		// прокрукта, чтобы текущий элемент стал видимым
+		var scroller = this.html[col].scroller;
+		var scrollerHeight = scroller.height();
+		var scrollerScroll = scroller.scrollTop();
+		var elmPos = $elm.position().top;
+		var scroll = -1;
+		
+		if (elmPos < 20)
+			scroll = scrollerScroll - (30 - elmPos);
+		else if (elmPos > scrollerHeight - 20)
+			scroll = scrollerScroll + (elmPos - scrollerHeight + 30)
+		
+		if (scroll > -1)
+			scroller.scrollTop(scroll);
 	},
 	
 	unselect: function(col){
@@ -740,19 +760,34 @@ var FileManager = {
 		$('#load-icon').hide();
 	},
 		
-	fastMoveToggle: function(elm){
+	fastMoveToggle: function(enable){
 		
 		if(this.block)
 			return;
 			
-		if(elm.checked == true){
+		if (enable) {
 			this.fastMove = true;
 			this.log('Быстрая навигация включена');
-		}else{
+		} else {
 			this.fastMove = false;
 			this.log('Быстрая навигация отключена');
 		}
 		this.displayFileTree(['left', 'right']);
+	},
+	
+	fitHeight: function(enable){
+		
+		var box = $('.fm-col-scroller');
+		
+		var docH = $('#su-content').height();
+		var winH = $(window).height();
+		var boxH = box.height();
+		
+		if (enable) {
+			box.css('height', boxH + (winH - docH));
+		} else {
+			box.css('height', 'auto');
+		}
 	},
 	
 	/**

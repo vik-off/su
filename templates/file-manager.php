@@ -5,7 +5,8 @@
 	<td colspan="3">
 		<table style="width:100%; margin: 1px 0;">
 		<tr>
-			<td style="width:150px;"><input id="btn-fast-mode" type="checkbox" onclick="FileManager.fastMoveToggle(this);" checked="checked"> <label for="btn-fast-mode">Быстрая навигация</label></td>
+			<td style="width:150px;"><label><input type="checkbox" onclick="FileManager.fastMoveToggle(this.checked);" checked="checked"> Быстрая навигация</label></td>
+			<td style="width:150px;"><label><input type="checkbox" onclick="FileManager.fitHeight(this.checked);" checked="checked"> Подогнать по высоте</label></td>
 			<td style="width:20px;"><a class="fm-opt-icon" href="#" onclick="FileManager.optMkdir();return false;"><img alt="cd" title="Создать папку" src="data/images/createDir.png"></a></td>
 			<td style="width:20px;"><a class="fm-opt-icon" href="#" onclick="FileManager.optMkfile();return false;"><img alt="cf" title="Создать файл" src="data/images/createFile.png"></a></td>
 			<td></td>
@@ -30,9 +31,9 @@
 	<td></td>
 	<td><input id="fm-addr-right" type="text" onKeyPress="if(event.keyCode == 13){FileManager.jump(this.value, 'right');}"></td>
 </tr>
-<tr valign="top">
+<tr valign="top" id="fm-cols-box">
 	<td class="fm-col-box fm-left">
-		<div>
+		<div class="fm-col-scroller left">
 			<table id="fm-left-col" class="fm-col" border=0 align="left">
 				<thead>
 				<tr class="fm-col-header">
@@ -47,7 +48,7 @@
 	</td>
 	<td></td>
 	<td class="fm-col-box fm-right">
-		<div>
+		<div class="fm-col-scroller right">
 			<table id="fm-right-col" class="fm-col" border=0 align="left">
 				<thead>
 				<tr class="fm-col-header">
@@ -62,9 +63,9 @@
 	</td>
 </tr>
 <tr>
-	<td id="fm-left-freespace"></td>
+	<td id="fm-left-freespace">В каталоге свободно: ...</td>
 	<td></td>
-	<td id="fm-right-freespace"></td>
+	<td id="fm-right-freespace">В каталоге свободно: ...</td>
 </tr>
 <tr>
 	<td><iframe src="<?=href('fm-upload?panel=left');?>" class="fm-upload"></iframe></td>

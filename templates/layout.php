@@ -46,55 +46,59 @@
 	</script>
 </head>
 <body>
-	<div id="topMenuBox">
-		<table border=0 width="100%">
-		<tr>
-			<td width="50"><a href="#" onClick="history.back();return false;">назад</a></td>
-			<td>
-				<form method="get" action="" style="display:inline">
-				<select id="top-menu-select" name="r" onChange="this.form.submit();">
-					<option value="index">главная страница
-					<option value="phpinfo">phpinfo
-					<option value="globals">глобальные массивы и переменные
-					<option value="file-manager">файловый менеджер
-					<option value="sqlManager.php">SQL менеджер
-				</select>
-				<script type="text/javascript">
-				$('#top-menu-select').val('<?= FrontController::get()->requestMethod; ?>');
-				</script>
-				 <input type="submit" name="go" value="Перейти">
-				</form>
-			</td>
-			<td width="15">
-				<a id="topMenuToggleBtn" onClick="$('#addit-menu').toggle();">&#9660;</a>
-				<div id="addit-menu" style="">
-					<a href="<?= href('clear-session'); ?>">Очистить текущую сессию</a>
-				</div>
-				<script type="text/javascript">
-				$(function(){
-					
-					$('#addit-menu a').live('click', function(){
-						$('#addit-menu').hide();
-					});
-					$(window).keypress(function(e){
-						if(e.keyCode == 27)
+	<div id="su-content">
+	
+		<div id="topMenuBox">
+			<table border=0 width="100%">
+			<tr>
+				<td width="50"><a href="#" onClick="history.back();return false;">назад</a></td>
+				<td>
+					<form method="get" action="" style="display:inline">
+					<select id="top-menu-select" name="r" onChange="this.form.submit();">
+						<option value="index">главная страница
+						<option value="phpinfo">phpinfo
+						<option value="globals">глобальные массивы и переменные
+						<option value="file-manager">файловый менеджер
+						<option value="sqlManager.php">SQL менеджер
+					</select>
+					<script type="text/javascript">
+					$('#top-menu-select').val('<?= FrontController::get()->requestMethod; ?>');
+					</script>
+					 <input type="submit" name="go" value="Перейти">
+					</form>
+				</td>
+				<td width="15">
+					<a id="topMenuToggleBtn" onClick="$('#addit-menu').toggle();">&#9660;</a>
+					<div id="addit-menu" style="">
+						<a href="<?= href('clear-session'); ?>">Очистить текущую сессию</a>
+					</div>
+					<script type="text/javascript">
+					$(function(){
+						
+						$('#addit-menu a').live('click', function(){
 							$('#addit-menu').hide();
+						});
+						$(window).keypress(function(e){
+							if(e.keyCode == 27)
+								$('#addit-menu').hide();
+						});
 					});
-				});
-				</script>
-			</td>
-			<td width="50">
-				<form class="" action="" method="post">
-					<?= FORMCODE; ?>
-					<input type="hidden" name="action" value="logout" />
-					<input type="submit" value="Выход" />
-				</form>
-			</td>
-		</tr>
-		</table>
-	</div>
-	<div style="margin:20px 30px;">
-		<?= $this->_getHtmlContent(); ?>
+					</script>
+				</td>
+				<td width="50">
+					<form class="" action="" method="post">
+						<?= FORMCODE; ?>
+						<input type="hidden" name="action" value="logout" />
+						<input type="submit" value="Выход" />
+					</form>
+				</td>
+			</tr>
+			</table>
+		</div>
+		<div style="margin:20px 30px;">
+			<?= $this->_getHtmlContent(); ?>
+		</div>
+	
 	</div>
 	
 </body>

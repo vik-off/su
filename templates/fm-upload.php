@@ -34,7 +34,7 @@
 	</script>
 </head>
 <body>
-	<form action="" enctype="multipart/form-data" method="post" style="margin: 1px;" onsubmit="return fillCurDir('<?=$panel;?>');">
+	<form action="" enctype="multipart/form-data" method="post" onsubmit="return fillCurDir('<?=$panel;?>');">
 		<?= FORMCODE; ?>
 		<input type="hidden" name="action" value="fm-upload" />
 		<input type="hidden" name="panel" value="<?=$panel;?>" />
