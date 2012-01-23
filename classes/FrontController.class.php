@@ -27,6 +27,9 @@ class FrontController extends Controller{
 		
 		$this->requestMethod = !empty($_rMethod) ? $_rMethod : 'index';
 		$this->requestParams = $request;
+		
+		if (!empty($_POST))
+			$_POST = unescapeArr($_POST);
 	}
 	
 	public function run(){
@@ -249,9 +252,9 @@ class FrontController extends Controller{
 	
 	public function action_fm_save_file(){
 		
-		$_filename = unescape(getVar($_POST['file-name']));
+		$_filename = getVar($_POST['file-name']);
 		$filename = WIN_SERVER ? utf2ansi($_filename) : $_filename;
-		$fileContent = unescape(getVar($_POST['file-content']));
+		$fileContent = getVar($_POST['file-content']);
 		
 		if(!file_exists($filename))
 			exit('Файл '.$filename.' не найден.');
@@ -269,7 +272,7 @@ class FrontController extends Controller{
 		$this->data['message'] = '';
 		
 		$numUploadedFiles = 0;
-		$dir = unescape(getVar($_POST['dir']));
+		$dir = getVar($_POST['dir']);
 		
 		if(!is_dir($dir)){
 			$this->data['message'] = 'ОШИБКА!\n"'.$dir.'" не является директорией';
@@ -363,7 +366,6 @@ class FrontController extends Controller{
 		$numDeleted = 0;
 		$undeleted = array();
 		foreach(getVar($_POST['files'], array(), 'array') as $f){
-			$f = unescape($f);
 			if(!file_exists($f)){
 				$undeleted[] = $f.' [файл не найден]';
 				continue;
@@ -390,6 +392,48 @@ class FrontController extends Controller{
 		echo $report;
 	}
 	
+	public function ajax_fm_mkdir(){
+		
+		$path = getVar($_POST['path']);
+		$name = getVar($_POST['name']);
+		
+		if (!is_dir($path))
+			die('Целевая папка не найдена');
+		
+		if (!preg_match('/^[^\/\\\\*?"<>|:]{1,255}$/', $name))
+			die('Недопустимое имя папки "'.$name.'"');
+		
+		chdir($path);
+		
+		if (is_dir($name))
+			die('Папка с таким именем уже существует');
+			
+		mkdir(WIN_SERVER ? iconv('utf-8', 'windows-1251', $name) : $name, 0777, TRUE);
+		echo 'ok';
+	}
+	
+	public function ajax_fm_mkfile(){
+		
+		$path = getVar($_POST['path']);
+		$name = getVar($_POST['name']);
+		
+		if (!is_dir($path))
+			die('Целевая папка не найдена');
+		
+		if (!preg_match('/^[^\/\\\\*?"<>|:]{1,255}$/', $name))
+			die('Недопустимое имя файла "'.$name.'"');
+		
+		chdir($path);
+		
+		if (file_exists($name) && !is_dir($name))
+			die('Файл с таким именем уже существует');
+		
+		$name = WIN_SERVER ? iconv('utf-8', 'windows-1251', $name) : $name;
+		
+		$f = fopen($name, "w") or die('Не удалось создать файл');
+		fclose($f);		
+		echo 'ok';
+	}
 
 	////////////////////
 	//////  MODEL  /////

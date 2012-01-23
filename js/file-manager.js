@@ -658,27 +658,65 @@ var FileManager = {
 	},
 		
 	optMkdir: function(){
-		FileManager.act = 'mkdir';
-		if(!this.activeColVal){alert('Выберите столбец.'); return;}
-		var path = this.activeColVal == 'fm-left-col' ? this.curDirL : this.curDirR;
-		if(!path){alert('Ошибка пути');return;}
+		
+		if (!this.curCol){
+			alert('Выберите столбец.');
+			return;
+		}
+		
+		var path = this.curDir[this.curCol];
+		if (!path) {
+			alert('Ошибка пути');
+			return;
+		}
+		
 		var name = prompt('Введите имя папки','Новая папка');
-		if(name === false){return;}
-		if(!name.length){alert('Имя папки не должно быть пустым'); this.optMkdir();return;}
-		this.block = true;
-		FileManager.send('act=mkdir&path=' + encodeURI(path) + '&name=' + encodeURI(name));
+		if (name === false) {
+			return;
+		}
+		if (!name.length) {
+			alert('Имя папки не должно быть пустым');
+			return;
+		}
+		
+		$.post(href('fm-mkdir'), {path: path, name: name}, function(response){
+			if (response != 'ok') {
+				alert('Ошибка создания папки:\n' + response);
+				return;
+			}
+			FileManager.displayFileTree([FileManager.curCol]);
+		});
 	},
 	
 	optMkfile: function(){
-		FileManager.act = 'mkfile';
-		if(!this.activeColVal){alert('Выберите столбец.'); return;}
-		var path = this.activeColVal == 'fm-left-col' ? this.curDirL : this.curDirR;
-		if(!path){alert('Ошибка пути');return;}
+		
+		if (!this.curCol){
+			alert('Выберите столбец.');
+			return;
+		}
+		
+		var path = this.curDir[this.curCol];
+		if (!path) {
+			alert('Ошибка пути');
+			return;
+		}
+		
 		var name = prompt('Введите имя файла','file.txt');
-		if(name === false){return;}
-		if(!name.length){alert('Имя файла не должно быть пустым'); this.optMkfile();return;}
-		this.block = true;
-		FileManager.send('act=mkfile&path=' + encodeURI(path) + '&name=' + encodeURI(name));
+		if (name === false) {
+			return;
+		}
+		if (!name.length) {
+			alert('Имя файла не должно быть пустым');
+			return;
+		}
+		
+		$.post(href('fm-mkfile'), {path: path, name: name}, function(response){
+			if (response != 'ok') {
+				alert('Ошибка создания файла:\n' + response);
+				return;
+			}
+			FileManager.displayFileTree([FileManager.curCol]);
+		});
 	},
 
 	select: function(col, elm, append){

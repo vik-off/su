@@ -92,6 +92,19 @@ function unescape($string){
 		: $string;
 }
 
+function unescapeArr($arr, $_force = false){
+	
+	if (!get_magic_quotes_gpc() && !$_force)
+		return $arr;
+	
+	foreach ($arr as &$v)
+		$v = empty($v)
+			? $v
+			: (is_scalar($v) ? stripslashes($v) : unescapeArr($v, true));
+	
+	return $arr;
+}
+
 function strDate($timestamp = null){
 	
 	if(is_null($timestamp))
