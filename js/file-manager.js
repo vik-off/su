@@ -671,7 +671,7 @@ var FileManager = {
 		}
 		
 		var name = prompt('Введите имя папки','Новая папка');
-		if (name === false) {
+		if (typeof name != 'string') {
 			return;
 		}
 		if (!name.length) {
@@ -702,7 +702,7 @@ var FileManager = {
 		}
 		
 		var name = prompt('Введите имя файла','file.txt');
-		if (name === false) {
+		if (typeof name != 'string') {
 			return;
 		}
 		if (!name.length) {

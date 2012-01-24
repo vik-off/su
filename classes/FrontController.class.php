@@ -312,7 +312,8 @@ class FrontController extends Controller{
 		$data = array(
 			'errcode' => 0,
 			'errmsg' => '',
-			'curDir' => realpath('.'),
+			'curDir' => null,
+			'curIsWriteable' => false,
 			'dirs' => array(),
 			'files' => array(),
 			'freeSpace' => '',
@@ -338,6 +339,7 @@ class FrontController extends Controller{
 		}
 		
 		$data['curDir'] = WIN_SERVER ? ansi2utf($curDir) : $curDir;
+		$data['curIsWriteable'] = is_writeable($curDir);
 		$data['freeSpace'] = sizeFormat(disk_free_space($curDir));
 		
 		foreach(scandir($curDir) as $elm){
