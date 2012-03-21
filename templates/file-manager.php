@@ -18,9 +18,9 @@
 			<td><a onclick="FileManager.reload();">Обновить</a></td>
 			<td><a>Редакторовать</a></td>
 			<td><a href='#' onclick="FileManager.optLoad(); return false;">Скачать</a></td>
-			<td><a href='#' onclick="FileManager.optRename(); return false;">Переименовать</a></td>
-			<td><a href='#' onclick="return false;">Копировать</a></td>
-			<td><a href='#' onclick="FileManager.optReplace(); return false;">Переместить</a></td>
+			<td><a href='#' onclick="FileManager.actions.rename(); return false;">Переименовать</a></td>
+			<td><a href='#' onclick="FileManager.actions.copy(); return false;">Копировать</a></td>
+			<td><a href='#' onclick="FileManager.actions.move(); ; return false;">Переместить</a></td>
 			<td><a href='#' onclick="FileManager.actions.del(); return false;">Удалить</a></td>
 		</tr>
 		</table>

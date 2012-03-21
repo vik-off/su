@@ -101,7 +101,7 @@ var FileManager = {
 					}
 					break;
 				case 113: // F2
-					trace("f2");
+					FileManager.actions.rename();
 					return false;
 				case 46: // DELETE
 					if(FileManager.curCol){
@@ -463,6 +463,7 @@ var FileManager = {
 						FileManager.ContextMenu.create(elm.name)
 							.addOpt('открыть', function(){FileManager.actions.open(t.data('path') + elm.name);})
 							.addOpt('править', function(){FileManager.actions.edit(t.data('path') + elm.name);})
+							.addOpt('переименовать', function(){FileManager.actions.rename(t.data('path'), elm.name, 'file');})
 							.addOpt('скачать', function(){FileManager.actions.download(t.data('path') + elm.name);})
 							.addOpt('удалить', function(){FileManager.actions.del(t.data('path') + elm.name);})
 							.show(
@@ -497,77 +498,6 @@ var FileManager = {
 		
 	},
 	
-	send: function(sendMsg){
-		XHR.open("POST", 'data/php/ajax.php');
-		XHR.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		XHR.send(sendMsg);
-		XHR.onreadystatechange = this.getResponse;
-		this.showLoadIcon();
-	},
-		
-	getResponse: function(){
-		if(XHR.readyState != 4){return;}
-		
-		FileManager.hideLoadIcon();
-		FileManager.block = false;
-		
-		if(FileManager.act == 'fileTree'){
-			try{eval("FileManager.response = " + (XHR.responseText));}
-			catch(e){alert("Ошибка распознавания данных!\n\n\tОтвет сервера:\n" + XHR.responseText + '\n\n\tОшибка Javascript:\n' + e);}
-			try{
-				if(FileManager.curCol == 1){FileManager.curDirL = decodeURIComponent(FileManager.response.curDir); FileManager.activeCol(1);}
-				else if(FileManager.curCol == 2){FileManager.curDirR = decodeURIComponent(FileManager.response.curDir); FileManager.activeCol(2);}
-				else{FileManager.curDirL = FileManager.curDirR = decodeURIComponent(FileManager.response.curDir); FileManager.activeCol(0);}
-				//заполнить таблицу
-				FileManager.showList();
-				//если перезагрузка
-				if(FileManager.mustReload){FileManager.mustReload = false; FileManager.act = 'FileManager'; FileManager.curCol = 2; FileManager.send('act=showTree&curDir=' + encodeURI(FileManager.curDirR));}
-			}
-			catch(e){alert("Ошибка декодирования данных!\nКолонка: "+FileManager.curCol+"\nОтвет сервера:\n" + XHR.responseText + '\n\nОшибка Javascript:\n' + e);}
-		}
-		else if(FileManager.act == 'rename'){
-			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Файл успешно переименован.', 'ok'); FileManager.reload();}
-			else if(XHR.responseText.substr(0,3) == '02.'){FileManager.log('Файл не найден!', 'error');}
-			else if(XHR.responseText.substr(0,3) == '03.'){FileManager.log('Файл с таким именем уже существует.', 'error');}
-			else if(XHR.responseText.substr(0,3) == '04.'){alert('Ошибка переименования.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка переименования.\n\n' + XHR.responseText);}
-		}
-		else if(FileManager.act == 'copy'){
-			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Файл успешно копирован.', 'ok'); FileManager.reload();}
-			else if(XHR.responseText.substr(0,3) == '02.'){alert('Файл не найден!');}
-			else if(XHR.responseText.substr(0,3) == '03.'){if(confirm('Файл с таким именем существует. Перезаписать?')){FileManager.optCopy(true);}}
-			else if(XHR.responseText.substr(0,3) == '04.'){alert('Ошибка копирования.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка копирования.\n\n' + XHR.responseText);}
-		}
-		else if(FileManager.act == 'replace'){
-			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Файл успешно перемещен.', 'ok'); FileManager.reload();}
-			else if(XHR.responseText.substr(0,3) == '02.'){alert('Файл не найден!');}
-			else if(XHR.responseText.substr(0,3) == '03.'){if(confirm('Файл с таким именем существует. Перезаписать?')){FileManager.optReplace(true);}}
-			else if(XHR.responseText.substr(0,3) == '04.'){alert('Ошибка перемещения.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка перемещения.\n\n' + XHR.responseText);}
-		}
-		else if(FileManager.act == 'delFile'){
-			if(XHR.responseText.substr(0,3) == '01.'){FileManager.log('Файл удален', 'ok'); FileManager.reload();}
-			else if(XHR.responseText.substr(0,3) == '02.'){alert('Файл не найден!');}
-			else if(XHR.responseText.substr(0,3) == '03.'){alert('Ошибка удаления файла.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка удаления.\n\n' + XHR.responseText);}
-		}
-		else if(FileManager.act == 'mkdir'){
-			var ans = XHR.responseText.substr(0,3);
-			if(ans == '01.'){FileManager.log('Папка успешно создана', 'ok'); FileManager.reload();}
-			else if(ans == '02.'){FileManager.log('Директория с таким именем уже существует.', 'error');}
-			else if(ans == '03.'){alert('Ошибка создания папки.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка.\n\n' + XHR.responseText);}
-		}
-		else if(FileManager.act == 'mkfile'){
-			var ans = XHR.responseText.substr(0,3);
-			if(ans == '01.'){FileManager.log('файл успешно создан', 'ok'); FileManager.reload();}
-			else if(ans == '02.'){FileManager.log('Файл с таким именем уже существует.', 'error');}
-			else if(ans == '03.'){alert('Ошибка создания файла.\n\n' + XHR.responseText);}
-			else{alert('Непредвиденная ошибка.\n\n' + XHR.responseText);}
-		}
-	},
-	
 	cd: function(dir, col){
 		
 		if(this.block)
@@ -590,13 +520,6 @@ var FileManager = {
 		this.displayFileTree([col]);
 	},
 	
-	load: function(path){
-		if(this.block){return;}
-		this.block = true;
-		this.act = 'fileTree';
-		this.send('act=showTree' + (path ? '&curDir=' + encodeURIComponent(path) : ''));
-	},
-	
 	reload: function(panel){
 		
 		if(this.block)
@@ -604,26 +527,6 @@ var FileManager = {
 		
 		panel = panel ? [panel] : ['left', 'right'];
 		this.displayFileTree(panel);
-	},
-		
-	optRename: function(){
-		FileManager.act = 'rename';
-		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Выберите файл!");return;}
-		var path = this.col == 1 ? FileManager.curDirL : FileManager.curDirR;
-		if(!path){alert('Ошибка пути');return;}
-		var name = prompt('Введите имя', this.target);
-		if(name === false){return;}
-		if(!name.length){alert('Имя не должно быть пустым');return;}
-		if(this.target == name){log('имена совпадают','error');return;}
-		this.block = true;
-		FileManager.send('act=rename&path=' + encodeURI(path) + '&oldname=' + encodeURI(this.target) + '&newname=' + encodeURI(name));
-	},
-	
-	optLoad: function(){
-		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Выберите файл!");return;}
-		if(this.type != 2){alert("Надо выбрать файл!");return;}
-		var param = encodeURI((this.col == 1 ? FileManager.curDirL : FileManager.curDirR) + '/' + this.target);
-		window.open('data/php/fileLoader.php?loadfile=' + param, 'fileLoader');
 	},
 	
 	optCopy: function(anyCase){
@@ -645,16 +548,6 @@ var FileManager = {
 		if(FileManager.curDirL == FileManager.curDirR){alert("Директории совпадают.");return;}
 		this.block = true;
 		FileManager.send('act=replaceFile' + (anyCase ? '&anyCase=yes' : '') + '&dirFrom=' + encodeURI(this.col == 1 ? FileManager.curDirL : FileManager.curDirR) + '&dirTo=' + encodeURI(this.col == 2 ? FileManager.curDirL : FileManager.curDirR) + '&fname=' + encodeURI(this.target));
-	},
-	
-	optDelFile: function(){
-		FileManager.act = 'delFile';
-		if(!this.selected || !this.target || !(this.col == 1 || this.col == 2)){alert("Выберите файл!");return;}
-		if(!confirm('Удалить файл "' + this.target + '"?')){return;}
-		var path = this.col == 1 ? FileManager.curDirL : FileManager.curDirR;
-		if(!path){alert("Ошибка пути!");return;}
-		this.block = true;
-		FileManager.send('act=delFile&fullpath=' + encodeURI(path + '/' + this.target));
 	},
 		
 	optMkdir: function(){
@@ -743,7 +636,9 @@ var FileManager = {
 		
 		var $elm = $(elm);
 		var item = {
-			type:     $elm.data('type'),                       // тип (файл или папка)
+			type:     $elm.data('type'),                       // тип [file|dir]
+			path:     $elm.data('path'),
+			name:     $elm.data('name'),
 			fullName: $elm.data('path') + $elm.data('name'),   // полный путь выделенного файла
 			html:     $elm,                                    // jquery dom объект tr-строки
 		}
@@ -837,6 +732,7 @@ var FileManager = {
 			case 'ok': color = 'green'; break;
 			case 'error': color = 'red'; break;
 		}
+		text = text.replace(/\n/g, '<br />');
 		$('<div style="color: ' + color + ';"></div>')
 			.append('<span class="fm-log-date">' + new Date().getYNString() + ' </span>')
 			.append('<span>' + text + '</span>')
@@ -871,13 +767,61 @@ var FileManager = {
 			var filesStr = '';
 			for(var i = files.length - 1; i >= 0; i--)
 				filesStr += '\n' + files[i];
-				
+			
 			if(confirm('удалить ' + files.length + ' файлов безвозвратно?\n' + filesStr)){
 				$.post(href('fm-delete'), {files: files}, function(response){
+					if (response != 'ok') {
+						alert(response);
+						return;
+					}
+					if (files.length == 1)
+						FileManager.log('Файл ' + files[0] + ' удален.');
+					else
+						FileManager.log('Файлы' + filesStr + '\nудалены.');
 					FileManager.reload();
-					alert(response);
 				});
 			}
+		},
+		rename: function(path, originName, type) {
+			
+			if (!path) {
+				if (FileManager.curCol && FileManager.selected[FileManager.curCol].length) {
+					if (FileManager.selected[FileManager.curCol].length > 1) {
+						alert('Выберите не более одного файла');
+						return;
+					}
+					path = FileManager.selected[FileManager.curCol][0].path;
+					originName = FileManager.selected[FileManager.curCol][0].name;
+					type = FileManager.selected[FileManager.curCol][0].type;
+				} else {
+					alert('файлы не выбраны');
+					return;
+				}
+			}
+			
+			var name = prompt('Введите имя', originName);
+			
+			if (name === false || !name.length)
+				return;
+			if (name == originName) {
+				FileManager.log('имена совпадают','error');
+				return;
+			}
+			
+			$.post(href('fm-rename'), {type: type, path: path, originName: originName, newName: name}, function(response){
+				if (response == 'ok') {
+					FileManager.log('Файл ' + path + originName + ' переименован в ' + path + name);
+					FileManager.reload();
+				} else {
+					alert(response);
+				}
+			});
+		},
+		copy: function(){
+			
+		},
+		move: function(){
+			
 		},
 	},
 	

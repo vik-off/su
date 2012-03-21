@@ -367,31 +367,53 @@ class FrontController extends Controller{
 		
 		$numDeleted = 0;
 		$undeleted = array();
-		foreach(getVar($_POST['files'], array(), 'array') as $f){
-			if(!file_exists($f)){
+		foreach (getVar($_POST['files'], array(), 'array') as $f) {
+			$f = WIN_SERVER ? utf2ansi($f) : $f;
+			if (!file_exists($f)) {
 				$undeleted[] = $f.' [файл не найден]';
 				continue;
 			}
-			if(!is_writeable($f)){
+			if (!is_writeable($f)) {
 				$undeleted[] = $f.' [нет прав на удаление]';
 				continue;
 			}
 			
-			if($this->model_fm_delete($f)){
+			$ans = $this->model_fm_delete($f);
+			if ($ans == 'ok') {
 				$numDeleted++;
-			}else{
-				$undeleted[] = $f.' [папка содержит вложенные файлы, которые не удалось удалить]';
+			} else {
+				$undeleted[] = $ans;
 			}
 		}
 		
-		$report = $numDeleted
-			? (empty($undeleted) ? 'все ' : '').$numDeleted." файлов были удалены\n\n"
-			: '';
+		echo count($undeleted)
+			? "Удалено $numDeleted файлов\n\nНе удалось удалить:\n".implode("\n", $undeleted)
+			: 'ok';
+	}
+	
+	public function ajax_fm_rename(){
 		
-		if(!empty($undeleted))
-			$report .= "не удалось удалить файлы:\n".implode("\n", $undeleted);
+		$path   = getVar($_POST['path']);
+		$origin = $path.getVar($_POST['originName']);
+		$new    = $path.getVar($_POST['newName']);
+		$isDir  = getVar($_POST['type']) == 'dir';
 		
-		echo $report;
+		if (WIN_SERVER) {
+			$origin = utf2ansi($origin);
+			$new = utf2ansi($new);
+		}
+		
+		if (!file_exists($origin))
+			die("Файл $origin не найден");
+		
+		// if (file_exists($new) && is_dir($new) == $isDir)
+		if (file_exists($new))
+			die((is_dir($new) ? 'Папка' : 'Файл')." $new уже существует");
+		
+		if (rename($origin, $new))
+			echo 'ok';
+		else
+			echo ' не удалось переименовать файл';
 	}
 	
 	public function ajax_fm_mkdir(){
@@ -410,7 +432,7 @@ class FrontController extends Controller{
 		if (is_dir($name))
 			die('Папка с таким именем уже существует');
 			
-		mkdir(WIN_SERVER ? iconv('utf-8', 'windows-1251', $name) : $name, 0777, TRUE);
+		mkdir(WIN_SERVER ? utf2ansi($name) : $name, 0777, TRUE);
 		echo 'ok';
 	}
 	
@@ -430,7 +452,7 @@ class FrontController extends Controller{
 		if (file_exists($name) && !is_dir($name))
 			die('Файл с таким именем уже существует');
 		
-		$name = WIN_SERVER ? iconv('utf-8', 'windows-1251', $name) : $name;
+		$name = WIN_SERVER ? utf2ansi($name) : $name;
 		
 		$f = fopen($name, "w") or die('Не удалось создать файл');
 		fclose($f);		
@@ -443,22 +465,24 @@ class FrontController extends Controller{
 	
 	public function model_fm_delete($file){
 		
-		if(!is_writeable($file))
-			return false;
+		if (!is_writeable($file))
+			return 'Нет прав на удаление файла '.$file;
 		
-		if(is_dir($file)){
-			$allDeleted = true;
+		if (is_dir($file)) {
+			$error = '';
 			$file = substr($file, -1) == DIRECTORY_SEPARATOR ? $file : $file.DIRECTORY_SEPARATOR;
-			foreach(scandir($file) as $f)
-				if($f != '.' && $f != '..')
-					if(!$this->model_fm_delete($file.$f))
-						$allDeleted = false;
-			if($allDeleted)
-				rmdir($file);
+			foreach (scandir($file) as $f)
+				if ($f != '.' && $f != '..')
+					if(($ans = $this->model_fm_delete($file.$f)) != 'ok')
+						$error .= $ans;
+			if($error)
+				return $error;
+			else
+				return rmdir($file) ? 'ok' : 'не удалось удалить директорию '.$file;
 		}else{
-			unlink($file);
+			return unlink($file) ? 'ok' : 'не удалось удалить файл '.$file;
 		}
-		return true;
+		return 'ok';
 	}
 
 }
